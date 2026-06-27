@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { Lock, User, Mail } from 'lucide-react';
+import { Lock, User, Mail, Eye, EyeOff } from 'lucide-react';
 import { auth, db } from '../lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -19,6 +19,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,14 +160,22 @@ export default function Login() {
             />
           </div>
           
-          <div className="input-group">
+          <div className="input-group" style={{ position: 'relative' }}>
             <div className="input-icon"><Lock size={16} /></div>
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="パスワード (6文字以上)" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{ paddingRight: '40px' }}
             />
+            <button 
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
           
           <button type="submit" className="login-btn" disabled={loading}>

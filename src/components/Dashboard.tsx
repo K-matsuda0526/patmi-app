@@ -140,11 +140,14 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             <h3>各種申請・外部システム</h3>
           </div>
           <div className="external-links-list">
-            <a href="#" className="external-link-item" onClick={e => e.preventDefault()}>
+            <a href="#" className="external-link-item" style={{ opacity: 0.6, cursor: 'not-allowed', filter: 'grayscale(100%)' }} onClick={e => e.preventDefault()}>
               <div className="external-icon bg-green">休</div>
               <div>
-                <h4>有給・休暇申請</h4>
-                <p>勤怠管理システムへ移動 (開発予定)</p>
+                <h4 style={{ display: 'flex', alignItems: 'center' }}>
+                  有給・休暇申請 
+                  <span style={{ fontSize: '11px', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontWeight: 'normal' }}>準備中</span>
+                </h4>
+                <p>勤怠管理システムへ移動 (近日公開)</p>
               </div>
             </a>
           </div>
