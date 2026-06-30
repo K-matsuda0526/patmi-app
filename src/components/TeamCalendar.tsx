@@ -245,8 +245,8 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
         return (
           <div key={member.id} className={`timeline-row ${isMe ? 'is-current-user' : ''}`}>
             <div className="member-info">
-              <div className="member-name">
-                <span className={`status-dot status-${member.status || 'office'}`} title={getStatusLabel(member.status || 'office')}></span>
+              <div className="member-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className={`status-badge status-${member.status || 'office'}`} style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '11px', color: '#fff', backgroundColor: `var(--status-${member.status || 'office'})` }}>{getStatusLabel(member.status || 'office')}</span>
                 {member.name || '未設定'} {isMe && <span className="me-badge">自分</span>}
               </div>
               <div className="member-meta">{member.branch || '未設定'} • {member.title || '未設定'}</div>
@@ -293,9 +293,9 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
             return (
               <div key={member.id} style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 1fr)', borderBottom: '1px solid var(--border-color)', background: isMe ? 'var(--me-bg)' : 'transparent' }}>
                 <div style={{ padding: '8px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', display: 'flex', alignItems: 'center' }}>
-                    <span className={`status-dot status-${member.status || 'office'}`} title={getStatusLabel(member.status || 'office')}></span>
-                    {member.name || '未設定'}
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className={`status-badge status-${member.status || 'office'}`} style={{ padding: '2px 4px', borderRadius: '4px', fontSize: '10px', color: '#fff', backgroundColor: `var(--status-${member.status || 'office'})`, whiteSpace: 'nowrap' }}>{getStatusLabel(member.status || 'office')}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name || '未設定'}</span>
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{member.branch}</div>
                 </div>
@@ -337,14 +337,14 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
 
     return (
       <div className="month-view glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>現在のステータス:</div>
-          {displayedMembers.map(member => (
-            <div key={member.id} style={{ display: 'flex', alignItems: 'center', fontSize: '12px' }}>
-              <span className={`status-dot status-${member.status || 'office'}`}></span>
-              {member.name || '未設定'}
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '12px', backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)' }}>
+          <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>ステータス凡例:</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-office"></span>社内</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-biztrip"></span>出張</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-out"></span>外出</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-meeting"></span>会議</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-away"></span>離席</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-offline"></span>退勤</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', padding: '8px', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold', background: 'var(--bg-card)' }}>
           {['月', '火', '水', '木', '金', '土', '日'].map(d => <div key={d}>{d}</div>)}
