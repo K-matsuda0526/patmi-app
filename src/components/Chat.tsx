@@ -333,7 +333,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                       </div>
                       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                         <div style={{ 
-                          backgroundColor: isMine ? '#10b981' : 'var(--bg-sidebar)', 
+                          backgroundColor: isMine ? '#10b981' : '#ffffff', 
                           color: isMine ? 'white' : 'var(--text-main)', 
                           padding: '12px 16px', 
                           borderRadius: isMine ? '16px 0 16px 16px' : '0 16px 16px 16px', 
