@@ -844,3 +844,12 @@ body {
 
 .holiday-cell { background-color: var(--accent-pink) !important; }
 .holiday-cell .date-number { color: #ef4444 !important; font-weight: bold; }
+
+@keyframes online-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.online-indicator {
+  animation: online-pulse 2s infinite;
+}

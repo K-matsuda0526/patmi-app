@@ -75,7 +75,7 @@ export default function Directory() {
                   </div>
                 )}
                 {member.isOnline && (
-                  <span style={{
+                  <span className="online-indicator" style={{
                     position: 'absolute',
                     bottom: '2px',
                     right: '2px',
