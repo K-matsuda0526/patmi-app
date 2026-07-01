@@ -65,7 +65,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                 )}
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '14px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{member.name}</div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-main)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{member.name}</div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   メッセージのプレビュー...
                 </div>
@@ -129,7 +129,9 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                     <div style={{ backgroundColor: '#10b981', color: 'white', padding: '12px 16px', borderRadius: '16px 0 16px 16px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5', fontWeight: 500 }}>
                       確認しました。LINEのような画面デザインですね！
                     </div>
-                    <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}><CheckCheck size={14} color="#10b981" /></div>
+                    <div style={{ color: 'var(--text-muted)', marginBottom: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: 'bold' }}>
+                      既読 <CheckCheck size={14} color="#10b981" />
+                    </div>
                   </div>
                 </div>
               </div>
