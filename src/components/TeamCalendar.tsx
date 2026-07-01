@@ -58,7 +58,14 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingScheduleId, setEditingScheduleId] = useState<number | string | null>(null);
   
-  const todayFormatted = calendarDate.toISOString().split('T')[0];
+  const getLocalDateString = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const todayFormatted = getLocalDateString(calendarDate);
   const todayDisplay = calendarDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
   const [modalData, setModalData] = useState({ title: '', start: '09:00', end: '10:00', color: 'blue', date: todayFormatted, endDate: todayFormatted, isAllDay: false });
@@ -312,7 +319,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{member.branch}</div>
                 </div>
                 {weekDays.map((date, i) => {
-                  const dateStr = date.toISOString().split('T')[0];
+                  const dateStr = getLocalDateString(date);
                   const isHol = isHoliday(date);
                   const daySchedules = (member.schedules || []).filter((s:any) => dateStr >= (s.date || '') && dateStr <= (s.endDate || s.date || ''));
                   daySchedules.sort((a:any, b:any) => timeToNum(a.start) - timeToNum(b.start));
@@ -366,7 +373,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
         </div>
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: 'var(--border-color)' }}>
           {monthDays.map((date, i) => {
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = getLocalDateString(date);
             const isCurrentMonth = date.getMonth() === calendarDate.getMonth();
             const isToday = dateStr === todayFormatted;
             const isHol = isHoliday(date);
