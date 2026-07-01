@@ -419,6 +419,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                           } 
                         }}
                       >
+                        <span className={`status-dot status-${schedule.member.status || 'office'}`} style={{ marginRight: '2px', width: '6px', height: '6px', flexShrink: 0 }}></span>
                         <span style={{ fontWeight: 'bold', marginRight: '4px', opacity: 0.7 }}>{schedule.member.name?.substring(0,2)}</span>
                         {schedule.title}
                       </div>
