@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, CalendarDays, User, Users, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, User, Users, Settings, LogOut, MessageSquare } from 'lucide-react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -20,6 +20,7 @@ import MySchedule from './components/MySchedule';
 import SettingsView from './components/Settings';
 import TeamCalendar from './components/TeamCalendar';
 import NotificationProvider from './components/NotificationProvider';
+import Chat from './components/Chat';
 
 // Mock data removed
 
@@ -146,6 +147,10 @@ function App() {
             <Users size={18} />
             <span>ディレクトリ</span>
           </a>
+          <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }}>
+            <MessageSquare size={18} />
+            <span>メッセージ</span>
+          </a>
           <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }}>
             <Settings size={18} />
             <span>設定</span>
@@ -186,6 +191,7 @@ function App() {
         {activeTab === 'calendar' && <TeamCalendar currentUser={currentUser} />}
         {activeTab === 'myschedule' && <MySchedule currentUser={currentUser} />}
         {activeTab === 'directory' && <Directory />}
+        {activeTab === 'chat' && <Chat currentUser={currentUser} />}
         {activeTab === 'settings' && <SettingsView currentUser={currentUser} />}
       </main>
     </div>

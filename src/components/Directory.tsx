@@ -104,16 +104,18 @@ export default function Directory() {
               </div>
               <div className="contact-emails">
                 {member.emails?.map((email: string, idx: number) => (
-                  <div key={idx} className="contact-item">
+                  <a key={idx} href={`mailto:${email}`} className="contact-item" style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                     <Mail size={14} /> {email}
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
             
             <div className="dir-card-actions">
               <button className="dir-btn"><MessageSquare size={14} /> チャット</button>
-              <button className="dir-btn"><Mail size={14} /> メール</button>
+              <a href={`mailto:${member.emails?.[0] || ''}`} className="dir-btn" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Mail size={14} /> メール
+              </a>
             </div>
           </div>
         ))}
