@@ -112,8 +112,11 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{selectedUser.name} • 10:42</div>
-                  <div style={{ backgroundColor: 'white', padding: '12px 16px', borderRadius: '0 16px 16px 16px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5' }}>
+                  <div style={{ backgroundColor: 'white', padding: '12px 16px', borderRadius: '0 16px 16px 16px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5', fontWeight: 500 }}>
                     よろしくお願いします！チャット機能のベースを作成しました。
+                  </div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '2px 6px', fontSize: '12px', marginTop: '-12px', zIndex: 1, alignSelf: 'flex-start', marginLeft: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                    👍 <span style={{ color: 'var(--text-muted)' }}>1</span>
                   </div>
                 </div>
               </div>
@@ -123,7 +126,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>10:45</div>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
-                    <div style={{ backgroundColor: '#10b981', color: 'white', padding: '12px 16px', borderRadius: '16px 0 16px 16px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5' }}>
+                    <div style={{ backgroundColor: '#10b981', color: 'white', padding: '12px 16px', borderRadius: '16px 0 16px 16px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5', fontWeight: 500 }}>
                       確認しました。LINEのような画面デザインですね！
                     </div>
                     <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}><CheckCheck size={14} color="#10b981" /></div>
