@@ -4,7 +4,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  */
 
-import { CalendarDays, Briefcase, Building2, Coffee, Video, Power, ExternalLink, MapPin } from 'lucide-react';
+import { CalendarDays, Briefcase, Building2, Coffee, Video, Power, ExternalLink, MapPin, Palmtree } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -16,7 +16,7 @@ interface DashboardProps {
 export default function Dashboard({ currentUser }: DashboardProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   // Load initial status from user profile if exists, default to 'office'
-  const [currentStatus, setCurrentStatus] = useState<'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline'>(currentUser?.status || 'office');
+  const [currentStatus, setCurrentStatus] = useState<'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline' | 'holiday'>(currentUser?.status || 'office');
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -46,7 +46,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
   };
 
   // Update Firestore when status changes
-  const handleStatusChange = async (newStatus: 'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline') => {
+  const handleStatusChange = async (newStatus: 'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline' | 'holiday') => {
     setCurrentStatus(newStatus);
     const uid = currentUser?.uid || currentUser?.id;
     if (uid) {
@@ -109,6 +109,10 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             <button className={`status-btn ${currentStatus === 'offline' ? 'active status-offline' : ''}`} onClick={() => handleStatusChange('offline')}>
               <Power size={24} />
               <span>退勤済 (オフ)</span>
+            </button>
+            <button className={`status-btn ${currentStatus === 'holiday' ? 'active status-holiday' : ''}`} onClick={() => handleStatusChange('holiday')}>
+              <Palmtree size={24} />
+              <span>休暇</span>
             </button>
           </div>
         </div>

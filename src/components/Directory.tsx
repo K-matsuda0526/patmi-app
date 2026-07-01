@@ -21,7 +21,8 @@ const getStatusLabel = (status: string) => {
     out: '外出',
     meeting: '会議',
     away: '離席',
-    offline: '退勤'
+    offline: '退勤',
+    holiday: '休暇'
   };
   return map[status] || status;
 };
@@ -57,6 +58,7 @@ export default function Directory() {
           <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-meeting"></span>会議</div>
           <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-away"></span>離席</div>
           <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-offline"></span>退勤</div>
+          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-holiday"></span>休暇</div>
         </div>
       </div>
 

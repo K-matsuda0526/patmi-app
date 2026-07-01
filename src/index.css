@@ -28,6 +28,7 @@
   --status-meeting: #ef4444;
   --status-away: #f59e0b;
   --status-offline: #6b7280;
+  --status-holiday: #ec4899;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -56,6 +57,7 @@
   --status-meeting: #ef4444;
   --status-away: #f59e0b;
   --status-offline: #6b7280;
+  --status-holiday: #ec4899;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -84,6 +86,7 @@
   --status-meeting: #b05c5a;
   --status-away: #d4a373;
   --status-offline: #707670; /* Neutral */
+  --status-holiday: #c57b85; /* Muted pink */
   
   --me-bg: rgba(210, 160, 90, 0.15); /* Warm pale yellow highlight */
 }
@@ -838,3 +841,6 @@ body {
     overflow-x: hidden;
   }
 }
+
+.holiday-cell { background-color: var(--accent-pink) !important; }
+.holiday-cell .date-number { color: #ef4444 !important; font-weight: bold; }

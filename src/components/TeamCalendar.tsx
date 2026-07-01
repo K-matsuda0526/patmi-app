@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from 'lucide-react';
 import { collection, onSnapshot, doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { isHoliday } from '../lib/holidays';
 
 const branches = ['全体', '本社', '三宅工場', '坪井工場', '大阪営業所', '福岡営業所', '横浜営業所'];
 
@@ -18,7 +19,8 @@ const getStatusLabel = (status: string) => {
     out: '外出',
     meeting: '会議',
     away: '離席',
-    offline: '退勤'
+    offline: '退勤',
+    holiday: '休暇'
   };
   return map[status] || status;
 };
@@ -281,11 +283,14 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
       <div className="week-view glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 1fr)', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
           <div style={{ padding: '8px', fontWeight: 'bold', borderRight: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>メンバー</div>
-          {weekDays.map((date, i) => (
-            <div key={i} style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none' }}>
+          {weekDays.map((date, i) => {
+            const isHol = isHoliday(date);
+            return (
+            <div key={i} className={isHol ? 'holiday-cell' : ''} style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none', color: isHol ? '#ef4444' : 'inherit', backgroundColor: isHol ? 'var(--accent-pink)' : 'inherit' }}>
               {date.getMonth() + 1}/{date.getDate()} ({getDayOfWeek(date)})
             </div>
-          ))}
+            );
+          })}
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {displayedMembers.map((member) => {
@@ -301,13 +306,15 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                 </div>
                 {weekDays.map((date, i) => {
                   const dateStr = date.toISOString().split('T')[0];
+                  const isHol = isHoliday(date);
                   const daySchedules = (member.schedules || []).filter((s:any) => s.date === dateStr);
                   daySchedules.sort((a:any, b:any) => timeToNum(a.start) - timeToNum(b.start));
                   
                   return (
                     <div 
                       key={i} 
-                      style={{ padding: '4px', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none', minHeight: '60px', cursor: isMe ? 'pointer' : 'default' }}
+                      className={isHol ? 'holiday-cell' : ''}
+                      style={{ padding: '4px', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none', minHeight: '60px', cursor: isMe ? 'pointer' : 'default', backgroundColor: isHol ? 'var(--accent-pink)' : 'transparent' }}
                       onClick={() => isMe ? openModal(null, dateStr) : null}
                     >
                       {daySchedules.map((schedule:any) => (
@@ -345,6 +352,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-meeting"></span>会議</div>
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-away"></span>離席</div>
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-offline"></span>退勤</div>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-holiday"></span>休暇</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', padding: '8px', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold', background: 'var(--bg-card)' }}>
           {['月', '火', '水', '木', '金', '土', '日'].map(d => <div key={d}>{d}</div>)}
@@ -354,6 +362,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
             const dateStr = date.toISOString().split('T')[0];
             const isCurrentMonth = date.getMonth() === calendarDate.getMonth();
             const isToday = dateStr === todayFormatted;
+            const isHol = isHoliday(date);
             
             // Gather all schedules for this day across all displayed members
             const daySchedules: any[] = [];
@@ -366,14 +375,15 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
             return (
               <div 
                 key={i} 
-                style={{ background: isToday ? 'var(--me-bg)' : 'var(--bg-card)', minHeight: '100px', padding: '4px', opacity: isCurrentMonth ? 1 : 0.4 }} 
+                className={isHol ? 'holiday-cell' : ''}
+                style={{ background: isHol ? 'var(--accent-pink)' : (isToday ? 'var(--me-bg)' : 'var(--bg-card)'), minHeight: '100px', padding: '4px', opacity: isCurrentMonth ? 1 : 0.4 }} 
                 onClick={() => {
                   // Switch to day view for this date
                   setCalendarView('day');
                   setCalendarDate(new Date(date));
                 }}
               >
-                <div style={{ textAlign: 'right', fontSize: '12px', marginBottom: '4px', paddingRight: '4px', fontWeight: isToday ? 'bold' : 'normal' }}>
+                <div className="date-number" style={{ textAlign: 'right', fontSize: '12px', marginBottom: '4px', paddingRight: '4px', fontWeight: isToday ? 'bold' : 'normal', color: isHol ? '#ef4444' : 'inherit' }}>
                   {date.getDate()}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -422,7 +432,17 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
               ))}
             </select>
           </div>
-          <p className="header-date">{calendarView === 'day' ? todayDisplay : calendarView === 'week' ? `${calendarDate.getFullYear()}年${calendarDate.getMonth()+1}月` : `${calendarDate.getFullYear()}年${calendarDate.getMonth()+1}月`}</p>
+          <p className="header-date">
+            {calendarView === 'day' ? (
+              <span style={{ color: isHoliday(calendarDate) ? '#ef4444' : 'inherit', fontWeight: isHoliday(calendarDate) ? 'bold' : 'normal' }}>
+                {todayDisplay} {isHoliday(calendarDate) && '(休)'}
+              </span>
+            ) : calendarView === 'week' ? (
+              `${calendarDate.getFullYear()}年${calendarDate.getMonth()+1}月`
+            ) : (
+              `${calendarDate.getFullYear()}年${calendarDate.getMonth()+1}月`
+            )}
+          </p>
         </div>
         
         <div style={{ display: 'flex', background: 'var(--border-color)', padding: '2px', borderRadius: '6px', marginRight: '16px' }}>
