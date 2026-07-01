@@ -47,7 +47,13 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const [selectedBranch, setSelectedBranch] = useState('全体');
   
   const [calendarDate, setCalendarDate] = useState(new Date());
-  const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>('day');
+  const [calendarView, setCalendarView] = useState<'day' | 'week' | 'month'>(() => {
+    return (localStorage.getItem('preferredCalendarView') as any) || 'day';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('preferredCalendarView', calendarView);
+  }, [calendarView]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingScheduleId, setEditingScheduleId] = useState<number | string | null>(null);
