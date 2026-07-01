@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Users } from 'lucide-react';
-import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc } from 'firebase/firestore';
+import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Users, Trash2 } from 'lucide-react';
+import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import NewGroupModal from './NewGroupModal';
 import NewChatModal from './NewChatModal';
@@ -164,6 +164,18 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     }
   };
 
+  const handleDeleteRoom = async () => {
+    if (!selectedRoom) return;
+    if (!window.confirm('このチャットを削除してもよろしいですか？（相手の画面からも消える場合があります）')) return;
+
+    try {
+      await deleteDoc(doc(db, 'chatRooms', selectedRoom.id));
+      setSelectedRoom(null);
+    } catch (e) {
+      console.error("Error deleting room", e);
+    }
+  };
+
   // Helper to get room display info
   const getRoomDisplay = (room: any) => {
     if (room.type === 'group') {
@@ -261,8 +273,18 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                   );
                 })()}
               </div>
-              <div>
-                <button className="icon-btn" style={{ background: 'none', border: 'none', cursor: 'pointer' }}><MoreVertical size={20} color="var(--text-muted)" /></button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  className="icon-btn" 
+                  onClick={handleDeleteRoom}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+                  title="チャットを削除"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <button className="icon-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                  <MoreVertical size={20} />
+                </button>
               </div>
             </div>
 
