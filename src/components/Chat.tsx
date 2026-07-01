@@ -31,7 +31,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
       {/* Sidebar - Chat List */}
       <div style={{ width: '300px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-sidebar)' }}>
         <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)' }}>
-          <h2 style={{ fontSize: '18px', margin: 0 }}>トーク</h2>
+          <h2 style={{ fontSize: '18px', margin: 0, color: 'var(--text-sidebar)' }}>トーク</h2>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {members.map(member => (
@@ -65,7 +65,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                 )}
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-main)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{member.name}</div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-sidebar)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{member.name}</div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   メッセージのプレビュー...
                 </div>
