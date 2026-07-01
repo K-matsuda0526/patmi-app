@@ -327,7 +327,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                       )
                     )}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
                         {!isMine && `${sender.name} • `}
                         {msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}
                       </div>
@@ -338,7 +338,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                           padding: '12px 16px', 
                           borderRadius: isMine ? '16px 0 16px 16px' : '0 16px 16px 16px', 
                           boxShadow: '0 1px 2px rgba(0,0,0,0.05)', 
-                          fontSize: '14px', 
+                          fontSize: '15px', 
                           lineHeight: '1.5', 
                           fontWeight: 500,
                           border: isMine ? 'none' : '1px solid var(--border-color)'
@@ -346,7 +346,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                           {msg.text}
                         </div>
                         {isMine && readCount > 0 && (
-                          <div style={{ color: 'var(--text-muted)', marginBottom: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: 'bold' }}>
+                          <div style={{ color: 'var(--text-muted)', marginBottom: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: 'bold' }}>
                             既読 <CheckCheck size={14} color="#10b981" />
                           </div>
                         )}
@@ -373,7 +373,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="メッセージを入力..." 
-                    style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontSize: '14px', color: 'var(--text-main)' }}
+                    style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontSize: '15px', color: 'var(--text-main)' }}
                   />
                   <button type="button" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex' }}>
                     <Smile size={20} />
