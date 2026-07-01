@@ -855,3 +855,7 @@ body {
 .online-indicator {
   animation: online-pulse 2s infinite;
 }
+.sidebar.collapsed { width: 80px; padding: 24px 12px; transition: width 0.3s ease; }
+.sidebar.collapsed .nav-item span, .sidebar.collapsed .theme-switcher, .sidebar.collapsed .sidebar-subtitle { display: none; }
+.sidebar.collapsed .nav-item { padding: 12px; justify-content: center; }
+.sidebar.collapsed .nav-item svg { margin: 0; }
