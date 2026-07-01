@@ -313,11 +313,11 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                 <div className="input-row">
                   <div className="input-group-vertical">
                     <label>開始時間</label>
-                    <input type="time" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                    <input type="time" step="900" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
                   </div>
                   <div className="input-group-vertical">
                     <label>終了時間</label>
-                    <input type="time" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
+                    <input type="time" step="900" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
                   </div>
                 </div>
               )}
