@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, CalendarDays, User, Users, Settings, LogOut, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, User, Users, Settings, LogOut, MessageSquare, Menu } from 'lucide-react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -27,6 +27,7 @@ import Chat from './components/Chat';
 function App() {
   const [theme, setTheme] = useState('cool');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [targetUserIdForChat, setTargetUserIdForChat] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -127,9 +128,18 @@ function App() {
     <NotificationProvider currentUser={currentUser}>
       <div className="app-container">
       {/* Sidebar Navigation */}
-      <aside className="sidebar">
-        <div className="sidebar-logo" style={{ fontFamily: 'sans-serif', fontWeight: 800, fontSize: '28px', letterSpacing: '-0.5px' }}>Patmi</div>
-        <div className="sidebar-subtitle" style={{ fontSize: '11px', letterSpacing: '1px', opacity: 0.8 }}>スケジュール管理</div>
+      <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isSidebarCollapsed ? '40px' : '8px' }}>
+          {!isSidebarCollapsed && <div className="sidebar-logo" style={{ fontFamily: 'sans-serif', fontWeight: 800, fontSize: '28px', letterSpacing: '-0.5px', margin: 0 }}>Patmi</div>}
+          <button 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            title={isSidebarCollapsed ? "メニューを展開" : "メニューを折りたたむ"}
+          >
+            <Menu size={24} />
+          </button>
+        </div>
+        {!isSidebarCollapsed && <div className="sidebar-subtitle" style={{ fontSize: '11px', letterSpacing: '1px', opacity: 0.8, marginBottom: '40px' }}>スケジュール管理</div>}
         
         <nav className="sidebar-nav">
           <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }}>
