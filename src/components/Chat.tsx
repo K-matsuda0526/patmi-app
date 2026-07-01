@@ -32,15 +32,21 @@ export default function Chat({ currentUser }: { currentUser: any }) {
   useEffect(() => {
     if (!currentUser?.uid || Object.keys(userCache).length === 0) return;
 
-    // First, query existing rooms where user is a member
+    // First, query existing rooms where user is a member (Removed orderBy to avoid composite index requirement)
     const q = query(
       collection(db, 'chatRooms'),
-      where('members', 'array-contains', currentUser.uid),
-      orderBy('updatedAt', 'desc')
+      where('members', 'array-contains', currentUser.uid)
     );
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const fetchedRooms = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      
+      // Sort rooms by updatedAt descending in memory
+      fetchedRooms.sort((a, b) => {
+        const timeA = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : 0;
+        const timeB = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : 0;
+        return timeB - timeA;
+      });
       
       // Auto-create DM rooms for users that don't have one
       const existingDMs = fetchedRooms.filter(r => r.type === 'direct');
