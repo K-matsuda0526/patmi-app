@@ -170,15 +170,12 @@
 
 /* Status Hub */
 .status-toggles {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 12px;
-  flex-wrap: wrap;
-  justify-content: space-between;
 }
 
 .status-btn {
-  flex: 1;
-  min-width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
