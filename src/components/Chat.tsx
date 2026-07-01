@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Plus, Users } from 'lucide-react';
+import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Users } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import NewGroupModal from './NewGroupModal';
+import NewChatModal from './NewChatModal';
+import { UserPlus } from 'lucide-react';
 
 export default function Chat({ currentUser }: { currentUser: any }) {
   const [rooms, setRooms] = useState<any[]>([]);
@@ -10,6 +12,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [message, setMessage] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
+  const [showNewChat, setShowNewChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Cache for user details (avatar, name)
@@ -39,7 +42,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     );
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const fetchedRooms = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      let fetchedRooms = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
       
       // Sort rooms by updatedAt descending in memory
       fetchedRooms.sort((a, b) => {
@@ -47,30 +50,6 @@ export default function Chat({ currentUser }: { currentUser: any }) {
         const timeB = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : 0;
         return timeB - timeA;
       });
-      
-      // Auto-create DM rooms for users that don't have one
-      const existingDMs = fetchedRooms.filter(r => r.type === 'direct');
-      const otherUsers = Object.values(userCache).filter(u => u.id !== currentUser.uid);
-      
-      for (const otherUser of otherUsers) {
-        const hasDM = existingDMs.some(r => r.members.includes(otherUser.id));
-        if (!hasDM) {
-          // Check if DM exists but wasn't fetched due to sorting/indexing delay
-          const dmId1 = `${currentUser.uid}_${otherUser.id}`;
-          
-          try {
-            await setDoc(doc(db, 'chatRooms', dmId1), {
-              type: 'direct',
-              members: [currentUser.uid, otherUser.id],
-              createdAt: serverTimestamp(),
-              updatedAt: serverTimestamp(),
-              lastMessage: null
-            }, { merge: true });
-          } catch (e) {
-            console.error("Error auto-creating room", e);
-          }
-        }
-      }
       
       setRooms(fetchedRooms);
     });
@@ -156,6 +135,35 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     }
   };
 
+  const handleCreateChat = async (userId: string) => {
+    try {
+      const dmId1 = `${currentUser.uid}_${userId}`;
+      
+      // Check if room already exists
+      const existingRoom = rooms.find(r => r.type === 'direct' && r.members.includes(userId));
+      
+      if (existingRoom) {
+        setSelectedRoom(existingRoom);
+        setShowNewChat(false);
+        return;
+      }
+
+      await setDoc(doc(db, 'chatRooms', dmId1), {
+        type: 'direct',
+        members: [currentUser.uid, userId],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastMessage: null
+      }, { merge: true });
+      
+      setShowNewChat(false);
+      // Let the snapshot handle adding it to the list, then we can select it
+      // For immediate feedback we could set selected room here
+    } catch (e) {
+      console.error("Error creating chat", e);
+    }
+  };
+
   // Helper to get room display info
   const getRoomDisplay = (room: any) => {
     if (room.type === 'group') {
@@ -173,9 +181,14 @@ export default function Chat({ currentUser }: { currentUser: any }) {
       <div style={{ width: '300px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-sidebar)' }}>
         <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '18px', margin: 0, color: 'var(--text-sidebar)' }}>トーク</h2>
-          <button className="icon-btn" onClick={() => setShowNewGroup(true)} title="新規グループ" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sidebar)' }}>
-            <Plus size={20} />
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button className="icon-btn" onClick={() => setShowNewChat(true)} title="新しいチャット" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sidebar)' }}>
+              <UserPlus size={20} />
+            </button>
+            <button className="icon-btn" onClick={() => setShowNewGroup(true)} title="新規グループ" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sidebar)' }}>
+              <Users size={20} />
+            </button>
+          </div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {rooms.map(room => {
@@ -367,6 +380,13 @@ export default function Chat({ currentUser }: { currentUser: any }) {
         <NewGroupModal 
           onClose={() => setShowNewGroup(false)} 
           onCreate={handleCreateGroup} 
+          currentUser={currentUser} 
+        />
+      )}
+      {showNewChat && (
+        <NewChatModal 
+          onClose={() => setShowNewChat(false)} 
+          onCreate={handleCreateChat} 
           currentUser={currentUser} 
         />
       )}
