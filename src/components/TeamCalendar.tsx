@@ -153,7 +153,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const getWeekDays = (date: Date) => {
     const days = [];
     const start = new Date(date);
-    start.setDate(start.getDate() - start.getDay() + 1); // Monday
+    start.setDate(start.getDate() - start.getDay()); // Sunday
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
       d.setDate(d.getDate() + i);
@@ -170,8 +170,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
     const days = [];
     
     // Add prev month days to fill first week
-    let startOffset = firstDay.getDay() - 1;
-    if (startOffset < 0) startOffset = 6;
+    let startOffset = firstDay.getDay();
     
     for (let i = startOffset; i > 0; i--) {
       const d = new Date(firstDay);
@@ -355,7 +354,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-holiday"></span>休暇</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', padding: '8px', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold', background: 'var(--bg-card)' }}>
-          {['月', '火', '水', '木', '金', '土', '日'].map(d => <div key={d}>{d}</div>)}
+          {['日', '月', '火', '水', '木', '金', '土'].map(d => <div key={d}>{d}</div>)}
         </div>
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: 'var(--border-color)' }}>
           {monthDays.map((date, i) => {

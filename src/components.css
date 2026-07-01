@@ -787,3 +787,7 @@ input:checked + .slider:before {
 }
 
  
+
+.status-btn.active.status-holiday { border: 2px solid var(--status-holiday); color: var(--status-holiday); background-color: rgba(0, 0, 0, 0.03); }
+.status-dot.status-holiday { background-color: var(--status-holiday); }
+.status-badge.status-holiday { background-color: var(--status-holiday); }
