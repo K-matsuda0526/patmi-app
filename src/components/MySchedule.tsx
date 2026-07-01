@@ -53,7 +53,7 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
     setCurrentWeekStart(newStart);
   };
 
-  const [modalData, setModalData] = useState({ title: '', date: todayStr, start: '09:00', end: '10:00', color: 'blue' });
+  const [modalData, setModalData] = useState({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', isAllDay: false });
 
   const mySchedules = currentUser?.schedules || [];
   const myTasks = currentUser?.tasks || [];
@@ -62,7 +62,7 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
 
   const renderDay = (dateObj: Date, labelStr?: string) => {
     const dStr = getLocalDateString(dateObj);
-    const daySchedules = mySchedules.filter((s: any) => s.date === dStr).sort((a: any, b: any) => a.start - b.start);
+    const daySchedules = mySchedules.filter((s: any) => dStr >= (s.date || '') && dStr <= (s.endDate || s.date || '')).sort((a: any, b: any) => a.start - b.start);
     
     // Only show if it's Today/Tomorrow OR if it has schedules
     if (!labelStr && daySchedules.length === 0) return null;
@@ -88,7 +88,7 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                 style={{ padding: '12px', marginBottom: '8px', cursor: 'pointer', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : `var(--accent-${schedule.color || 'blue'})` }}
                 onClick={() => openModal(schedule)}
               >
-                <div style={{ fontWeight: 'bold' }}>{numToTime(schedule.start)} - {numToTime(schedule.end)}</div>
+                <div style={{ fontWeight: 'bold' }}>{schedule.isAllDay ? '終日' : `${numToTime(schedule.start)} - ${numToTime(schedule.end)}`}</div>
                 <div>{schedule.title}</div>
               </div>
             ))
@@ -104,13 +104,15 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
       setModalData({
         title: schedule.title,
         date: schedule.date || todayStr,
-        start: numToTime(schedule.start),
-        end: numToTime(schedule.end),
-        color: schedule.color
+        endDate: schedule.endDate || schedule.date || todayStr,
+        start: typeof schedule.start === 'number' ? numToTime(schedule.start) : schedule.start,
+        end: typeof schedule.end === 'number' ? numToTime(schedule.end) : schedule.end,
+        color: schedule.color || 'blue',
+        isAllDay: schedule.isAllDay || false
       });
     } else {
       setEditingScheduleId(null);
-      setModalData({ title: '', date: todayStr, start: '09:00', end: '10:00', color: 'blue' });
+      setModalData({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', isAllDay: false });
     }
     setIsScheduleModalOpen(true);
   };
@@ -123,11 +125,11 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
     
     if (editingScheduleId) {
       newSchedules = newSchedules.map((s: any) => s.id === editingScheduleId ? {
-        ...s, title: modalData.title, date: modalData.date, start: timeToNum(modalData.start), end: timeToNum(modalData.end), color: modalData.color
+        ...s, title: modalData.title, date: modalData.date, endDate: modalData.endDate, start: timeToNum(modalData.start), end: timeToNum(modalData.end), color: modalData.color, isAllDay: modalData.isAllDay
       } : s);
     } else {
       newSchedules.push({
-        id: Date.now().toString(), title: modalData.title, date: modalData.date, start: timeToNum(modalData.start), end: timeToNum(modalData.end), color: modalData.color
+        id: Date.now().toString(), title: modalData.title, date: modalData.date, endDate: modalData.endDate, start: timeToNum(modalData.start), end: timeToNum(modalData.end), color: modalData.color, isAllDay: modalData.isAllDay
       });
     }
     try {
@@ -296,19 +298,29 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                 <input type="text" placeholder="例: クライアント商談" value={modalData.title} onChange={e => setModalData({...modalData, title: e.target.value})} />
               </div>
               <div className="input-group-vertical">
-                <label>日付</label>
-                <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value})} />
-              </div>
-              <div className="input-row">
-                <div className="input-group-vertical">
-                  <label>開始時間</label>
-                  <input type="time" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                <label>期間・終日</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value})} style={{ flex: 1 }} />
+                  <span>〜</span>
+                  <input type="date" value={modalData.endDate} onChange={e => setModalData({...modalData, endDate: e.target.value})} style={{ flex: 1 }} />
                 </div>
-                <div className="input-group-vertical">
-                  <label>終了時間</label>
-                  <input type="time" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
-                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer', fontWeight: 'normal' }}>
+                  <input type="checkbox" checked={modalData.isAllDay} onChange={e => setModalData({...modalData, isAllDay: e.target.checked})} />
+                  終日の予定
+                </label>
               </div>
+              {!modalData.isAllDay && (
+                <div className="input-row">
+                  <div className="input-group-vertical">
+                    <label>開始時間</label>
+                    <input type="time" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                  </div>
+                  <div className="input-group-vertical">
+                    <label>終了時間</label>
+                    <input type="time" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
+                  </div>
+                </div>
+              )}
               <div className="input-group-vertical">
                 <label>カラータグ</label>
                 <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

@@ -36,7 +36,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
   const todayStr = getLocalDateString(currentTime);
 
   const todaysSchedules = (currentUser?.schedules || [])
-    .filter((s: any) => s.date === todayStr)
+    .filter((s: any) => todayStr >= (s.date || '') && todayStr <= (s.endDate || s.date || ''))
     .sort((a: any, b: any) => a.start - b.start);
 
   const numToTime = (num: number) => {
@@ -129,7 +129,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             ) : (
               todaysSchedules.map((schedule: any) => (
                 <div key={schedule.id} className="schedule-item" style={{ padding: '12px', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : `var(--accent-${schedule.color || 'blue'})` }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{numToTime(schedule.start)} - {numToTime(schedule.end)}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{schedule.isAllDay ? '終日' : `${numToTime(schedule.start)} - ${numToTime(schedule.end)}`}</div>
                   <div style={{ fontSize: '15px' }}>{schedule.title}</div>
                 </div>
               ))

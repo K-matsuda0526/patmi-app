@@ -61,7 +61,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const todayFormatted = calendarDate.toISOString().split('T')[0];
   const todayDisplay = calendarDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
-  const [modalData, setModalData] = useState({ title: '', start: '09:00', end: '10:00', color: 'blue', date: todayFormatted });
+  const [modalData, setModalData] = useState({ title: '', start: '09:00', end: '10:00', color: 'blue', date: todayFormatted, endDate: todayFormatted, isAllDay: false });
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -103,11 +103,13 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
         start: typeof schedule.start === 'number' ? numToTime(schedule.start) : schedule.start,
         end: typeof schedule.end === 'number' ? numToTime(schedule.end) : schedule.end,
         color: schedule.color || 'blue',
-        date: schedule.date || todayFormatted
+        date: schedule.date || todayFormatted,
+        endDate: schedule.endDate || schedule.date || todayFormatted,
+        isAllDay: schedule.isAllDay || false
       });
     } else {
       setEditingScheduleId(null);
-      setModalData({ title: '', start: '09:00', end: '10:00', color: 'blue', date: defaultDate || todayFormatted });
+      setModalData({ title: '', start: '09:00', end: '10:00', color: 'blue', date: defaultDate || todayFormatted, endDate: defaultDate || todayFormatted, isAllDay: false });
     }
     setIsModalOpen(true);
   };
@@ -201,7 +203,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   };
 
   const renderSchedulesDay = (schedules: any[], isMe: boolean, targetDate: string) => {
-    const filteredSchedules = schedules.filter(s => s.date === targetDate);
+    const filteredSchedules = schedules.filter(s => targetDate >= (s.date || '') && targetDate <= (s.endDate || s.date || ''));
     
     return filteredSchedules.map(schedule => {
       const startNum = timeToNum(schedule.start);
@@ -247,7 +249,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
       </div>
       {displayedMembers.map(member => {
         const isMe = currentUser && (currentUser.uid === member.id || currentUser.id === member.id);
-        const todaysSchedules = (member.schedules || []).filter((s:any) => s.date === todayFormatted);
+        const todaysSchedules = (member.schedules || []).filter((s:any) => todayFormatted >= (s.date || '') && todayFormatted <= (s.endDate || s.date || ''));
         
         return (
           <div key={member.id} className={`timeline-row ${isMe ? 'is-current-user' : ''}`}>
@@ -312,7 +314,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                 {weekDays.map((date, i) => {
                   const dateStr = date.toISOString().split('T')[0];
                   const isHol = isHoliday(date);
-                  const daySchedules = (member.schedules || []).filter((s:any) => s.date === dateStr);
+                  const daySchedules = (member.schedules || []).filter((s:any) => dateStr >= (s.date || '') && dateStr <= (s.endDate || s.date || ''));
                   daySchedules.sort((a:any, b:any) => timeToNum(a.start) - timeToNum(b.start));
                   
                   return (
@@ -372,7 +374,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
             // Gather all schedules for this day across all displayed members
             const daySchedules: any[] = [];
             displayedMembers.forEach(member => {
-              const schedules = (member.schedules || []).filter((s:any) => s.date === dateStr);
+              const schedules = (member.schedules || []).filter((s:any) => dateStr >= (s.date || '') && dateStr <= (s.endDate || s.date || ''));
               schedules.forEach((s:any) => daySchedules.push({ ...s, member }));
             });
             daySchedules.sort((a, b) => timeToNum(a.start) - timeToNum(b.start));
@@ -491,29 +493,48 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                 <input type="text" placeholder="例: 定例ミーティング" value={modalData.title} onChange={e => setModalData({...modalData, title: e.target.value})} />
               </div>
               <div className="input-group-vertical">
-                <label>日付</label>
-                <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value})} />
-              </div>
-              <div className="input-row">
-                <div className="input-group-vertical">
-                  <label>開始時間</label>
-                  <input type="time" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                  <label>期間・終日</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value})} style={{ flex: 1 }} />
+                    <span>〜</span>
+                    <input type="date" value={modalData.endDate} onChange={e => setModalData({...modalData, endDate: e.target.value})} style={{ flex: 1 }} />
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer', fontWeight: 'normal' }}>
+                    <input type="checkbox" checked={modalData.isAllDay} onChange={e => setModalData({...modalData, isAllDay: e.target.checked})} />
+                    終日の予定
+                  </label>
                 </div>
-                <div className="input-group-vertical">
-                  <label>終了時間</label>
-                  <input type="time" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
-                </div>
-              </div>
+                {!modalData.isAllDay && (
+                  <div className="input-row">
+                    <div className="input-group-vertical">
+                      <label>開始時間</label>
+                      <input type="time" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                    </div>
+                    <div className="input-group-vertical">
+                      <label>終了時間</label>
+                      <input type="time" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
+                    </div>
+                  </div>
+                )}
               <div className="input-group-vertical">
                 <label>カラータグ</label>
-                <div className="color-picker">
-                  {['blue', 'pink', 'green', 'yellow'].map(c => (
-                    <div 
-                      key={c} 
-                      className={`color-circle bg-${c} ${modalData.color === c ? 'selected' : ''}`}
-                      onClick={() => setModalData({...modalData, color: c})}
+                <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {['blue', 'pink', 'green', 'yellow'].map(c => (
+                      <div 
+                        key={c} 
+                        className={`color-circle bg-${c} ${modalData.color === c ? 'selected' : ''}`}
+                        onClick={() => setModalData({...modalData, color: c})}
+                      />
+                    ))}
+                    <div style={{ borderLeft: '1px solid var(--border-color)', height: '24px', margin: '0 4px' }}></div>
+                    <input 
+                      type="color" 
+                      value={modalData.color?.startsWith('#') ? modalData.color : '#cbd5e1'} 
+                      onChange={e => setModalData({...modalData, color: e.target.value})} 
+                      style={{ width: '32px', height: '32px', border: 'none', padding: 0, borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}
+                      title="カスタムカラー"
                     />
-                  ))}
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>カスタム</span>
                 </div>
               </div>
             </div>
