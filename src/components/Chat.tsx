@@ -422,9 +422,9 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                                 <Smile size={14} />
                               </button>
                               {activeReactionMsgId === msg.id && (
-                                <div style={{ position: 'absolute', bottom: '100%', left: '0', background: 'var(--bg-card)', padding: '4px', borderRadius: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', display: 'flex', gap: '4px', zIndex: 10, border: '1px solid var(--border-color)' }}>
-                                  {['👍', '❤️', '🙏', '😂', '👀'].map(emoji => (
-                                    <button key={emoji} onClick={() => { handleReaction(msg.id, emoji); setActiveReactionMsgId(null); }} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', padding: '4px 8px', borderRadius: '12px' }}>
+                                <div style={{ position: 'absolute', bottom: '100%', left: '0', background: 'var(--bg-card)', padding: '8px', borderRadius: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', display: 'flex', flexWrap: 'wrap', width: '240px', gap: '4px', zIndex: 10, border: '1px solid var(--border-color)' }}>
+                                  {['👍', '❤️', '🙏', '😂', '👀', '🎉', '✅', '🤔', '🔥', '💯', '✨', '😅', '💡', '👏', '😢'].map(emoji => (
+                                    <button key={emoji} onClick={() => { handleReaction(msg.id, emoji); setActiveReactionMsgId(null); }} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: '6px', borderRadius: '8px', flex: '1 0 15%', display: 'flex', justifyContent: 'center', transition: 'transform 0.1s' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.2)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
                                       {emoji}
                                     </button>
                                   ))}
