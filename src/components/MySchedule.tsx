@@ -23,6 +23,9 @@ const numToTime = (num: number) => {
 export default function MySchedule({ currentUser }: { currentUser: any }) {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [taskModalData, setTaskModalData] = useState({ title: '', dueDate: '' });
+  const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [editingScheduleId, setEditingScheduleId] = useState<number | string | null>(null);
   
   const getLocalDateString = (date: Date) => {
@@ -53,6 +56,9 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
   const [modalData, setModalData] = useState({ title: '', date: todayStr, start: '09:00', end: '10:00', color: 'blue' });
 
   const mySchedules = currentUser?.schedules || [];
+  const myTasks = currentUser?.tasks || [];
+  const activeTasks = myTasks.filter((t: any) => !t.completed);
+  const completedTasks = myTasks.filter((t: any) => t.completed);
 
   const renderDay = (dateObj: Date, labelStr?: string) => {
     const dStr = getLocalDateString(dateObj);
@@ -144,6 +150,56 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
     }
   };
 
+  const openTaskModal = (task?: any) => {
+    if (task) {
+      setEditingTaskId(task.id);
+      setTaskModalData({ title: task.title, dueDate: task.dueDate || '' });
+    } else {
+      setEditingTaskId(null);
+      setTaskModalData({ title: '', dueDate: '' });
+    }
+    setIsTaskModalOpen(true);
+  };
+  const closeTaskModal = () => setIsTaskModalOpen(false);
+
+  const handleSaveTask = async () => {
+    if (!currentUser?.uid || !taskModalData.title.trim()) return;
+    let newTasks = [...myTasks];
+    if (editingTaskId) {
+      newTasks = newTasks.map((t: any) => t.id === editingTaskId ? { ...t, title: taskModalData.title, dueDate: taskModalData.dueDate } : t);
+    } else {
+      newTasks.push({ id: Date.now().toString(), title: taskModalData.title, dueDate: taskModalData.dueDate, completed: false });
+    }
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid), { tasks: newTasks }, { merge: true });
+      closeTaskModal();
+    } catch (e) {
+      alert('保存に失敗しました');
+    }
+  };
+
+  const handleDeleteTask = async () => {
+    if (!currentUser?.uid || !editingTaskId) return;
+    if (!confirm('このタスクを削除しますか？')) return;
+    let newTasks = myTasks.filter((t: any) => t.id !== editingTaskId);
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid), { tasks: newTasks }, { merge: true });
+      closeTaskModal();
+    } catch (e) {
+      alert('削除に失敗しました');
+    }
+  };
+
+  const handleToggleTask = async (taskId: string, currentCompleted: boolean) => {
+    if (!currentUser?.uid) return;
+    let newTasks = myTasks.map((t: any) => t.id === taskId ? { ...t, completed: !currentCompleted } : t);
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid), { tasks: newTasks }, { merge: true });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <div className="myschedule-container">
       <header className="myschedule-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -182,19 +238,45 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                 <Clock size={18} />
                 <h3>タスクと期限</h3>
               </div>
-              <button className="btn" style={{ padding: '4px 8px' }} onClick={() => setIsTaskModalOpen(true)}>
+              <button className="btn" style={{ padding: '4px 8px' }} onClick={() => openTaskModal()}>
                 <Plus size={14} /> 追加
               </button>
             </div>
             <div className="task-list">
-              <div className="task-item">
-                <input type="checkbox" />
-                <span>月間レポート提出 (金曜まで)</span>
-              </div>
-              <div className="task-item">
-                <input type="checkbox" />
-                <span>経費精算 (月末まで)</span>
-              </div>
+              {activeTasks.map((task: any) => (
+                <div key={task.id} className="task-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                  <input type="checkbox" checked={false} onChange={() => handleToggleTask(task.id, false)} style={{ marginTop: '4px' }} />
+                  <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => openTaskModal(task)}>
+                    <div style={{ fontSize: '14px', fontWeight: '500' }}>{task.title}</div>
+                    {task.dueDate && <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>期限: {task.dueDate}</div>}
+                  </div>
+                </div>
+              ))}
+              {activeTasks.length === 0 && <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>タスクはありません</div>}
+              
+              {completedTasks.length > 0 && (
+                <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                  <div 
+                    style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer', marginBottom: '8px' }}
+                    onClick={() => setIsCompletedTasksOpen(!isCompletedTasksOpen)}
+                  >
+                    <span style={{ transform: isCompletedTasksOpen ? 'rotate(90deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-block', marginRight: '4px' }}>▶</span>
+                    完了済み ({completedTasks.length})
+                  </div>
+                  {isCompletedTasksOpen && (
+                    <div style={{ opacity: 0.6 }}>
+                      {completedTasks.map((task: any) => (
+                        <div key={task.id} className="task-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                          <input type="checkbox" checked={true} onChange={() => handleToggleTask(task.id, true)} style={{ marginTop: '4px' }} />
+                          <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => openTaskModal(task)}>
+                            <div style={{ fontSize: '14px', textDecoration: 'line-through' }}>{task.title}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -268,25 +350,34 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
 
       {/* Task Modal */}
       {isTaskModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsTaskModalOpen(false)}>
+        <div className="modal-overlay" onClick={closeTaskModal}>
           <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>タスクを追加</h3>
-              <button className="modal-close" onClick={() => setIsTaskModalOpen(false)}><X size={20}/></button>
+              <h3>{editingTaskId ? 'タスクを編集' : 'タスクを追加'}</h3>
+              <button className="modal-close" onClick={closeTaskModal}><X size={20}/></button>
             </div>
             <div className="modal-body">
               <div className="input-group-vertical">
                 <label>タスク内容</label>
-                <input type="text" placeholder="例: 月間レポート提出" />
+                <input type="text" placeholder="例: 月間レポート提出" value={taskModalData.title} onChange={e => setTaskModalData({...taskModalData, title: e.target.value})} />
               </div>
               <div className="input-group-vertical">
                 <label>期限 (任意)</label>
-                <input type="date" />
+                <input type="date" value={taskModalData.dueDate} onChange={e => setTaskModalData({...taskModalData, dueDate: e.target.value})} />
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="btn" onClick={() => setIsTaskModalOpen(false)}>キャンセル</button>
-              <button className="btn btn-primary" onClick={() => setIsTaskModalOpen(false)}>保存する</button>
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div>
+                {editingTaskId && (
+                  <button className="btn" style={{ color: 'var(--status-meeting)' }} onClick={handleDeleteTask}>
+                    <Trash2 size={16} /> 削除
+                  </button>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="btn" onClick={closeTaskModal}>キャンセル</button>
+                <button className="btn btn-primary" onClick={handleSaveTask}>保存する</button>
+              </div>
             </div>
           </div>
         </div>
