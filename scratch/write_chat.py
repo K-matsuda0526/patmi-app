@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import codecs
+code = """import { useState, useEffect, useRef } from 'react';
 import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Plus, Users } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -40,7 +41,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     );
 
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const fetchedRooms = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      const fetchedRooms = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       // Auto-create DM rooms for users that don't have one
       const existingDMs = fetchedRooms.filter(r => r.type === 'direct');
@@ -51,6 +52,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
         if (!hasDM) {
           // Check if DM exists but wasn't fetched due to sorting/indexing delay
           const dmId1 = `${currentUser.uid}_${otherUser.id}`;
+          const dmId2 = `${otherUser.id}_${currentUser.uid}`;
           
           try {
             await setDoc(doc(db, 'chatRooms', dmId1), {
@@ -82,7 +84,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setMessages(msgs);
       
       // Auto scroll
@@ -153,10 +155,10 @@ export default function Chat({ currentUser }: { currentUser: any }) {
   // Helper to get room display info
   const getRoomDisplay = (room: any) => {
     if (room.type === 'group') {
-      return { name: room.name, avatar: null, isGroup: true, isOnline: false };
+      return { name: room.name, avatar: null, isGroup: true };
     } else {
       const otherUid = room.members.find((id: string) => id !== currentUser?.uid);
-      const otherUser = userCache[otherUid] || { name: 'Unknown', isOnline: false };
+      const otherUser = userCache[otherUid] || { name: 'Unknown' };
       return { name: otherUser.name, avatar: otherUser.avatar, isGroup: false, isOnline: otherUser.isOnline };
     }
   };
@@ -249,11 +251,9 @@ export default function Chat({ currentUser }: { currentUser: any }) {
 
             {/* Chat Messages */}
             <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {messages.length === 0 && (
-                <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', margin: '16px 0' }}>
-                  メッセージはまだありません
-                </div>
-              )}
+              <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', margin: '16px 0' }}>
+                ここからメッセージの履歴です
+              </div>
               
               {messages.map(msg => {
                 const isMine = msg.senderId === currentUser?.uid;
@@ -274,7 +274,7 @@ export default function Chat({ currentUser }: { currentUser: any }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                         {!isMine && `${sender.name} • `}
-                        {msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}
+                        {msg.createdAt?.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) || ''}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
                         <div style={{ 
@@ -367,3 +367,6 @@ export default function Chat({ currentUser }: { currentUser: any }) {
     </div>
   );
 }
+"""
+with codecs.open('src/components/Chat.tsx', 'w', 'utf-8') as f:
+    f.write(code)
