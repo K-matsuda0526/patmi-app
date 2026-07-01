@@ -147,6 +147,23 @@ export default function Settings({ currentUser }: { currentUser: any }) {
     }
   };
 
+  const handleAvatarDelete = async () => {
+    if (!currentUser?.uid) return;
+    if (!window.confirm('プロフィール画像を削除して初期アイコンに戻しますか？')) return;
+    setIsUploading(true);
+    try {
+      // NOTE: We don't delete the physical file from storage to avoid missing reference errors in old caches,
+      // but we remove the URL from the user document which effectively resets their avatar.
+      await setDoc(doc(db, 'users', currentUser.uid), { avatar: null }, { merge: true });
+      alert('アバター画像を削除しました！');
+    } catch (e) {
+      console.error(e);
+      alert('画像の削除に失敗しました');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       handleAvatarUpload(e.target.files[0]);
@@ -260,14 +277,17 @@ export default function Settings({ currentUser }: { currentUser: any }) {
             </div>
             <div className="settings-row">
               <div className="settings-label">アバター画像</div>
-              <div className="settings-value" style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                {currentUser?.avatar ? (
-                  <img src={currentUser.avatar} alt="Avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div className="dir-avatar-placeholder bg-blue" style={{ width: '80px', height: '80px', fontSize: '32px' }}>
-                    {currentUser?.name?.charAt(0) || 'U'}
-                  </div>
-                )}
+                <div className="settings-value" style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                  {currentUser?.avatar ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <img src={currentUser.avatar} alt="Avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <button className="btn btn-outline" style={{ fontSize: '12px', padding: '4px 8px' }} onClick={handleAvatarDelete}>画像を削除</button>
+                    </div>
+                  ) : (
+                    <div className="dir-avatar-placeholder bg-blue" style={{ width: '80px', height: '80px', fontSize: '32px' }}>
+                      {currentUser?.name?.charAt(0) || 'U'}
+                    </div>
+                  )}
                 <div 
                   className={`drag-drop-zone ${isDragging ? 'dragging' : ''}`}
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
