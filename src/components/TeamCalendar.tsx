@@ -213,11 +213,15 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
     const filteredSchedules = schedules.filter(s => targetDate >= (s.date || '') && targetDate <= (s.endDate || s.date || ''));
     
     return filteredSchedules.map(schedule => {
-      const startNum = timeToNum(schedule.start);
-      const endNum = timeToNum(schedule.end);
-      
-      const leftPercent = Math.max(0, ((startNum - 8) / 10) * 100);
-      const widthPercent = Math.min(100 - leftPercent, ((endNum - startNum) / 10) * 100);
+      let leftPercent = 0;
+      let widthPercent = 100;
+
+      if (!schedule.isAllDay) {
+        const startNum = timeToNum(schedule.start);
+        const endNum = timeToNum(schedule.end);
+        leftPercent = Math.max(0, ((startNum - 8) / 10) * 100);
+        widthPercent = Math.min(100 - leftPercent, ((endNum - startNum) / 10) * 100);
+      }
       
       return (
         <div 
