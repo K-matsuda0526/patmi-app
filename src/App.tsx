@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { LayoutDashboard, CalendarDays, User, Users, Settings, LogOut } from 'lucide-react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import './index.css';
 import './components.css'; // Import the new styles
 
@@ -68,6 +68,44 @@ function App() {
       }
     };
   }, []);
+
+  // Handle Online Presence
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    
+    const updateOnlineStatus = async (isOnline: boolean) => {
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid), { 
+          isOnline,
+          lastActive: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        console.error("Failed to update presence", e);
+      }
+    };
+
+    // Set online initially
+    if (document.visibilityState === 'visible') {
+      updateOnlineStatus(true);
+    }
+
+    const handleVisibilityChange = () => {
+      updateOnlineStatus(document.visibilityState === 'visible');
+    };
+
+    const handleBeforeUnload = () => {
+      updateOnlineStatus(false);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      updateOnlineStatus(false);
+    };
+  }, [currentUser?.uid]);
 
   const handleLogout = async () => {
     await signOut(auth);

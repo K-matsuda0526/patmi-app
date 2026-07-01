@@ -64,15 +64,31 @@ export default function Directory() {
 
       <div className="directory-grid">
         {members.map(member => (
-          <div key={member.id} className="directory-card glass-panel">
-            <div className="dir-card-header">
-              {member.avatar ? (
-                <img src={member.avatar} alt={member.name} className="dir-avatar" />
-              ) : (
-                <div className="dir-avatar-placeholder bg-blue">
-                  {getInitials(member.name)}
-                </div>
-              )}
+          <div key={member.id} className="directory-card glass-panel" style={{ opacity: member.isOnline ? 1 : 0.6, transition: 'opacity 0.3s ease' }}>
+            <div className="dir-card-header" style={{ position: 'relative' }}>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                {member.avatar ? (
+                  <img src={member.avatar} alt={member.name} className="dir-avatar" />
+                ) : (
+                  <div className="dir-avatar-placeholder bg-blue">
+                    {getInitials(member.name)}
+                  </div>
+                )}
+                {member.isOnline && (
+                  <span style={{
+                    position: 'absolute',
+                    bottom: '2px',
+                    right: '2px',
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: '#10b981',
+                    borderRadius: '50%',
+                    border: '2px solid var(--glass-border, #fff)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    zIndex: 2
+                  }}></span>
+                )}
+              </div>
               <div className="dir-info">
                 <div className="dir-branch">{member.branch} • {member.title}</div>
                 <div className="dir-name">
