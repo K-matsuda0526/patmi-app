@@ -770,10 +770,12 @@ body {
   opacity: 0.9;
 }
 
-.timecard-btn.disabled-btn {
-  background-color: var(--border-color);
-  color: var(--text-muted);
-  cursor: not-allowed;
+.timecard-btn.disabled-btn,
+.btn:disabled, 
+.btn-primary:disabled {
+  background-color: var(--border-color) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed !important;
   opacity: 0.5;
 }
 
