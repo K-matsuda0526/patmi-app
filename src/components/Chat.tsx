@@ -5,6 +5,7 @@ import { db } from '../lib/firebase';
 import NewGroupModal from './NewGroupModal';
 import NewChatModal from './NewChatModal';
 import { UserPlus } from 'lucide-react';
+import EmojiPicker from 'emoji-picker-react';
 
 export default function Chat({ currentUser, initialTargetUserId }: { currentUser: any, initialTargetUserId?: string | null }) {
   const [rooms, setRooms] = useState<any[]>([]);
@@ -14,6 +15,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
   const [activeReactionMsgId, setActiveReactionMsgId] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -460,9 +462,24 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                     style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontSize: '15px', color: 'var(--text-main)', resize: 'none', overflowY: 'auto', minHeight: '24px', maxHeight: '120px', lineHeight: '1.5', padding: 0 }}
                     rows={1}
                   />
-                  <button type="button" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex' }}>
-                    <Smile size={20} />
-                  </button>
+                  <div style={{ position: 'relative' }}>
+                    <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex' }}>
+                      <Smile size={20} />
+                    </button>
+                    {showEmojiPicker && (
+                      <div style={{ position: 'absolute', bottom: '100%', right: '0', zIndex: 50, marginBottom: '8px' }}>
+                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }} onClick={() => setShowEmojiPicker(false)} />
+                        <EmojiPicker 
+                          onEmojiClick={(emojiData) => {
+                            setMessage(prev => prev + emojiData.emoji);
+                            setShowEmojiPicker(false);
+                          }}
+                          width={300}
+                          height={400}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button 
                   type="submit" 
