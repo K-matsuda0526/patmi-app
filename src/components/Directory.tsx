@@ -27,7 +27,7 @@ const getStatusLabel = (status: string) => {
   return map[status] || status;
 };
 
-export default function Directory() {
+export default function Directory({ onStartChat }: { onStartChat?: (userId: string) => void }) {
   const [members, setMembers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -112,7 +112,9 @@ export default function Directory() {
             </div>
             
             <div className="dir-card-actions">
-              <button className="dir-btn"><MessageSquare size={14} /> チャット</button>
+              <button className="dir-btn" onClick={() => onStartChat && onStartChat(member.id)}>
+                <MessageSquare size={14} /> チャット
+              </button>
               <a href={`mailto:${member.emails?.[0] || ''}`} className="dir-btn" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Mail size={14} /> メール
               </a>

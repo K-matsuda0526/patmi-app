@@ -27,6 +27,7 @@ import Chat from './components/Chat';
 function App() {
   const [theme, setTheme] = useState('cool');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [targetUserIdForChat, setTargetUserIdForChat] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -149,7 +150,7 @@ function App() {
           </a>
           <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }}>
             <MessageSquare size={18} />
-            <span>メッセージ</span>
+            <span>チャット</span>
           </a>
           <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }}>
             <Settings size={18} />
@@ -190,8 +191,8 @@ function App() {
         {activeTab === 'dashboard' && <Dashboard currentUser={currentUser} />}
         {activeTab === 'calendar' && <TeamCalendar currentUser={currentUser} />}
         {activeTab === 'myschedule' && <MySchedule currentUser={currentUser} />}
-        {activeTab === 'directory' && <Directory />}
-        {activeTab === 'chat' && <Chat currentUser={currentUser} />}
+        {activeTab === 'directory' && <Directory onStartChat={(userId: string) => { setActiveTab('chat'); setTargetUserIdForChat(userId); }} />}
+        {activeTab === 'chat' && <Chat currentUser={currentUser} initialTargetUserId={targetUserIdForChat} />}
         {activeTab === 'settings' && <SettingsView currentUser={currentUser} />}
       </main>
     </div>

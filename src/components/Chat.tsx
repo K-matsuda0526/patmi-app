@@ -6,7 +6,7 @@ import NewGroupModal from './NewGroupModal';
 import NewChatModal from './NewChatModal';
 import { UserPlus } from 'lucide-react';
 
-export default function Chat({ currentUser }: { currentUser: any }) {
+export default function Chat({ currentUser, initialTargetUserId }: { currentUser: any, initialTargetUserId?: string | null }) {
   const [rooms, setRooms] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -56,6 +56,20 @@ export default function Chat({ currentUser }: { currentUser: any }) {
 
     return () => unsubscribe();
   }, [currentUser?.uid, userCache]);
+
+  // Handle initialTargetUserId when navigating from Directory
+  useEffect(() => {
+    if (!initialTargetUserId || rooms.length === 0 || !currentUser?.uid) return;
+    
+    // Check if room exists
+    const existingRoom = rooms.find(r => r.type === 'direct' && r.members.includes(initialTargetUserId));
+    if (existingRoom) {
+      setSelectedRoom(existingRoom);
+    } else {
+      // Room doesn't exist, create it
+      handleCreateChat(initialTargetUserId);
+    }
+  }, [initialTargetUserId, rooms.length, currentUser?.uid]);
 
   // 3. Fetch messages when a room is selected
   useEffect(() => {
@@ -388,12 +402,10 @@ export default function Chat({ currentUser }: { currentUser: any }) {
             </div>
           </>
         ) : (
-          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--accent-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
-              <MessageSquare size={32} />
-            </div>
-            <h3>メッセージ</h3>
-            <p>左側のリストからチャットする相手を選択してください</p>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            <MessageSquare size={64} style={{ opacity: 0.2, marginBottom: '16px' }} />
+            <h3>チャット</h3>
+            <p>左側のリストからチャット相手を選択してください</p>
           </div>
         )}
       </div>
