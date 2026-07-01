@@ -13,7 +13,16 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
   const [message, setMessage] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
+  const [activeReactionMsgId, setActiveReactionMsgId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [message]);
   
   // Cache for user details (avatar, name)
   const [userCache, setUserCache] = useState<Record<string, any>>({});
@@ -101,6 +110,37 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
     
     return () => unsubscribe();
   }, [selectedRoom?.id, currentUser?.uid]);
+
+  const handleDeleteMessage = async (msgId: string) => {
+    if (window.confirm('送信を取り消しますか？')) {
+      await updateDoc(doc(db, `chatRooms/${selectedRoom.id}/messages`, msgId), {
+        isDeleted: true,
+        text: ''
+      });
+    }
+  };
+
+  const handleReaction = async (msgId: string, emoji: string) => {
+    const msgRef = doc(db, `chatRooms/${selectedRoom.id}/messages`, msgId);
+    const msg = messages.find(m => m.id === msgId);
+    if (!msg) return;
+    const reactions = msg.reactions || {};
+    if (reactions[currentUser.uid] === emoji) {
+      delete reactions[currentUser.uid];
+    } else {
+      reactions[currentUser.uid] = emoji;
+    }
+    await updateDoc(msgRef, { reactions });
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (message.trim()) {
+        handleSend(e as any);
+      }
+    }
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,7 +291,10 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                     {display.name}
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                    {room.lastMessage ? room.lastMessage.text : 'まだメッセージはありません'}
+                    {room.lastMessage ? (
+                      room.lastMessage.isDeleted ? '送信を取り消しました' :
+                      `${room.lastMessage.senderId === currentUser.uid ? 'あなた: ' : ''}${room.lastMessage.text}`
+                    ) : 'メッセージはまだありません'}
                   </div>
                 </div>
               </div>
@@ -332,24 +375,64 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                         {msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px' }}>
-                        <div style={{ 
-                          backgroundColor: isMine ? '#10b981' : '#ffffff', 
-                          color: isMine ? 'white' : 'var(--text-main)', 
-                          padding: '12px 16px', 
-                          borderRadius: isMine ? '16px 0 16px 16px' : '0 16px 16px 16px', 
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)', 
-                          fontSize: '15px', 
-                          lineHeight: '1.5', 
-                          fontWeight: 500,
-                          border: isMine ? 'none' : '1px solid var(--border-color)'
-                        }}>
-                          {msg.text}
-                        </div>
-                        {isMine && readCount > 0 && (
-                          <div style={{ color: 'var(--text-muted)', marginBottom: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: 'bold' }}>
-                            既読 <CheckCheck size={14} color="#10b981" />
+                        <div style={{ position: 'relative' }}>
+                          <div style={{ 
+                            backgroundColor: msg.isDeleted ? 'transparent' : (isMine ? '#10b981' : '#ffffff'), 
+                            color: msg.isDeleted ? 'var(--text-muted)' : (isMine ? 'white' : 'var(--text-main)'), 
+                            padding: msg.isDeleted ? '8px 12px' : '12px 16px', 
+                            borderRadius: isMine ? '16px 0 16px 16px' : '0 16px 16px 16px', 
+                            boxShadow: msg.isDeleted ? 'none' : '0 1px 2px rgba(0,0,0,0.05)', 
+                            fontSize: '15px', 
+                            lineHeight: '1.5', 
+                            fontWeight: 500,
+                            border: msg.isDeleted ? '1px solid var(--border-color)' : (isMine ? 'none' : '1px solid var(--border-color)'),
+                            fontStyle: msg.isDeleted ? 'italic' : 'normal',
+                            whiteSpace: 'pre-wrap'
+                          }}>
+                            {msg.isDeleted ? '送信を取り消しました' : msg.text}
                           </div>
-                        )}
+
+                          {/* Reactions display */}
+                          {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                            <div style={{ position: 'absolute', bottom: '-10px', [isMine ? 'left' : 'right']: '10px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '2px 6px', fontSize: '12px', display: 'flex', gap: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', zIndex: 2 }}>
+                              {Array.from(new Set(Object.values(msg.reactions))).map((emoji: any) => (
+                                <span key={emoji}>{emoji}</span>
+                              ))}
+                              <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginLeft: '2px' }}>{Object.keys(msg.reactions).length}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Actions (Read receipts / Delete / React) */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '4px', alignItems: isMine ? 'flex-end' : 'flex-start' }}>
+                          {isMine && readCount > 0 && (
+                            <div style={{ color: 'var(--text-muted)', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: 'bold' }}>
+                              既読 <CheckCheck size={14} color="#10b981" />
+                            </div>
+                          )}
+
+                          {isMine && !msg.isDeleted && (
+                            <button onClick={() => handleDeleteMessage(msg.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', opacity: 0.6 }} title="送信取消">
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                          {!isMine && !msg.isDeleted && (
+                            <div style={{ position: 'relative' }}>
+                              <button onClick={() => setActiveReactionMsgId(activeReactionMsgId === msg.id ? null : msg.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '2px', opacity: 0.6 }} title="リアクション">
+                                <Smile size={14} />
+                              </button>
+                              {activeReactionMsgId === msg.id && (
+                                <div style={{ position: 'absolute', bottom: '100%', left: '0', background: 'var(--bg-card)', padding: '4px', borderRadius: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', display: 'flex', gap: '4px', zIndex: 10, border: '1px solid var(--border-color)' }}>
+                                  {['👍', '❤️', '🙏', '😂', '👀'].map(emoji => (
+                                    <button key={emoji} onClick={() => { handleReaction(msg.id, emoji); setActiveReactionMsgId(null); }} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', padding: '4px 8px', borderRadius: '12px' }}>
+                                      {emoji}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -368,12 +451,14 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                   <ImageIcon size={20} />
                 </button>
                 <div style={{ flex: 1, backgroundColor: 'var(--bg-body)', borderRadius: '24px', padding: '8px 16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center' }}>
-                  <input 
-                    type="text" 
+                  <textarea 
+                    ref={textareaRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="メッセージを入力..." 
-                    style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontSize: '15px', color: 'var(--text-main)' }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="メッセージを入力... (Shift+Enterで改行)" 
+                    style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontSize: '15px', color: 'var(--text-main)', resize: 'none', overflowY: 'auto', minHeight: '24px', maxHeight: '120px', lineHeight: '1.5', padding: 0 }}
+                    rows={1}
                   />
                   <button type="button" style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex' }}>
                     <Smile size={20} />
