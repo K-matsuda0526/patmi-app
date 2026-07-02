@@ -300,7 +300,7 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
               <div className="input-group-vertical">
                 <label>期間・終日</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value})} style={{ flex: 1 }} />
+                  <input type="date" value={modalData.date} onChange={e => setModalData({...modalData, date: e.target.value, endDate: e.target.value})} style={{ flex: 1 }} />
                   <span>〜</span>
                   <input type="date" value={modalData.endDate} onChange={e => setModalData({...modalData, endDate: e.target.value})} style={{ flex: 1 }} />
                 </div>
