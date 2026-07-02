@@ -221,40 +221,78 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const renderSchedulesDay = (schedules: any[], isMe: boolean, targetDate: string) => {
     const filteredSchedules = schedules.filter(s => targetDate >= (s.date || '') && targetDate <= (s.endDate || s.date || ''));
     
-    return filteredSchedules.map(schedule => {
-      let leftPercent = 0;
-      let widthPercent = 100;
-
-      if (!schedule.isAllDay) {
-        const startNum = timeToNum(schedule.start);
-        const endNum = timeToNum(schedule.end);
-        leftPercent = Math.max(0, ((startNum - 8) / 10) * 100);
-        widthPercent = Math.min(100 - leftPercent, ((endNum - startNum) / 10) * 100);
-      }
-      
-      return (
-        <div 
-          key={schedule.id}
-          className={`schedule-block bg-${schedule.color}`}
-          style={{ 
-            left: `${leftPercent}%`, 
-            width: `${widthPercent}%`, 
-            cursor: isMe ? 'pointer' : 'default',
-            position: 'absolute',
-            top: '4px',
-            bottom: '4px'
-          }}
-          onClick={(e) => {
-            if (isMe) {
-              e.stopPropagation();
-              openModal(schedule);
-            }
-          }}
-        >
-          {schedule.title}
-        </div>
-      );
+    // Sort chronologically
+    filteredSchedules.sort((a, b) => {
+      const aStart = a.isAllDay ? 8 : timeToNum(a.start);
+      const bStart = b.isAllDay ? 8 : timeToNum(b.start);
+      return aStart - bStart;
     });
+
+    const lanes: any[][] = [];
+    filteredSchedules.forEach(schedule => {
+      const startNum = schedule.isAllDay ? 8 : timeToNum(schedule.start);
+      const endNum = schedule.isAllDay ? 18 : timeToNum(schedule.end);
+
+      let placed = false;
+      for (let i = 0; i < lanes.length; i++) {
+        const hasOverlap = lanes[i].some(existing => {
+          const eStart = existing.isAllDay ? 8 : timeToNum(existing.start);
+          const eEnd = existing.isAllDay ? 18 : timeToNum(existing.end);
+          // Two schedules overlap if one starts before the other ends, and vice versa.
+          // We add a tiny offset (0.01) so that back-to-back schedules (e.g. 10:00-11:00 and 11:00-12:00) do NOT overlap.
+          return (startNum < eEnd - 0.01 && endNum > eStart + 0.01);
+        });
+        if (!hasOverlap) {
+          lanes[i].push(schedule);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        lanes.push([schedule]);
+      }
+    });
+
+    return {
+      elements: lanes.map((lane, laneIndex) => {
+        return lane.map(schedule => {
+          let leftPercent = 0;
+          let widthPercent = 100;
+
+          if (!schedule.isAllDay) {
+            const startNum = timeToNum(schedule.start);
+            const endNum = timeToNum(schedule.end);
+            leftPercent = Math.max(0, ((startNum - 8) / 10) * 100);
+            widthPercent = Math.min(100 - leftPercent, ((endNum - startNum) / 10) * 100);
+          }
+          
+          return (
+            <div 
+              key={schedule.id}
+              className={`schedule-block bg-${schedule.color}`}
+              style={{ 
+                left: `${leftPercent}%`, 
+                width: `${widthPercent}%`, 
+                cursor: isMe ? 'pointer' : 'default',
+                position: 'absolute',
+                top: `${4 + laneIndex * 32}px`,
+                height: '28px',
+                bottom: 'auto'
+              }}
+              onClick={(e) => {
+                if (isMe) {
+                  e.stopPropagation();
+                  openModal(schedule);
+                }
+              }}
+            >
+              {schedule.title}
+            </div>
+          );
+        });
+      }),
+      laneCount: Math.max(1, lanes.length)
+    };
   };
 
   const renderDayView = () => (
@@ -280,23 +318,29 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
               </div>
               <div className="member-meta">{member.branch || '未設定'} • {member.title || '未設定'}</div>
             </div>
-            <div 
-              className={`schedule-slots ${isMe ? 'interactive-slot' : 'locked-slot'}`}
-              onClick={() => isMe ? openModal(null, todayFormatted) : null}
-              title={isMe ? "クリックして予定を追加" : "他人の予定は編集できません"}
-            >
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="schedule-grid-line"></div>
-              ))}
-              {renderSchedulesDay(member.schedules || [], isMe, todayFormatted)}
-              
-              {todaysSchedules.length === 0 && (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '12px', pointerEvents: 'none' }}>
-                  予定なし
+            {(() => {
+              const { elements, laneCount } = renderSchedulesDay(member.schedules || [], isMe, todayFormatted);
+              return (
+                <div 
+                  className={`schedule-slots ${isMe ? 'interactive-slot' : 'locked-slot'}`}
+                  style={{ minHeight: `${Math.max(60, laneCount * 32 + 8)}px` }}
+                  onClick={() => isMe ? openModal(null, todayFormatted) : null}
+                  title={isMe ? "クリックして予定を追加" : "他人の予定は編集できません"}
+                >
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="schedule-grid-line"></div>
+                  ))}
+                  {elements}
+                  
+                  {todaysSchedules.length === 0 && (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '12px', pointerEvents: 'none' }}>
+                      予定なし
+                    </div>
+                  )}
+                  {isMe && <div className="add-hover-indicator"><Plus size={14}/>追加</div>}
                 </div>
-              )}
-              {isMe && <div className="add-hover-indicator"><Plus size={14}/>追加</div>}
-            </div>
+              );
+            })()}
           </div>
         );
       })}
