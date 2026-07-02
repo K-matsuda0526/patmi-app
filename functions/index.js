@@ -39,6 +39,13 @@ exports.sendChatPushNotification = functions.firestore
         title: roomData.type === 'group' ? `${roomData.name} (${senderName})` : senderName,
         body: message.text || "新しいメッセージが届きました",
       },
+      webpush: {
+        notification: {
+          icon: '/icon.png',
+          silent: false,
+          requireInteraction: false
+        }
+      },
       data: {
         type: "chat",
         roomId: roomId
@@ -98,6 +105,13 @@ exports.sendSchedulePushNotification = functions.firestore
       notification: {
         title: "スケジュール更新",
         body: `${userName}さんのスケジュールが更新されました`,
+      },
+      webpush: {
+        notification: {
+          icon: '/icon.png',
+          silent: false,
+          requireInteraction: false
+        }
       },
       data: {
         type: "schedule",
