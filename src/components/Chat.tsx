@@ -20,6 +20,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
   const [activeReactionMsgId, setActiveReactionMsgId] = useState<string | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [stagedFile, setStagedFile] = useState<{file: File, type: 'image' | 'file'} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -130,10 +131,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
 
   const handleDeleteMessage = async (msgId: string) => {
     if (window.confirm('送信を取り消しますか？')) {
-      await updateDoc(doc(db, `chatRooms/${selectedRoom.id}/messages`, msgId), {
-        isDeleted: true,
-        text: ''
-      });
+      await deleteDoc(doc(db, `chatRooms/${selectedRoom.id}/messages`, msgId));
     }
   };
 
@@ -199,9 +197,21 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'file') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'file') => {
     const file = e.target.files?.[0];
     if (!file || !selectedRoom) return;
+    setStagedFile({ file, type });
+    if (e.target) e.target.value = '';
+  };
+
+  const handleCancelFileUpload = () => {
+    setStagedFile(null);
+  };
+
+  const handleConfirmFileUpload = async () => {
+    if (!stagedFile || !selectedRoom) return;
+    const { file, type } = stagedFile;
+    setStagedFile(null);
 
     setIsUploadingFile(true);
     try {
@@ -243,7 +253,6 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
       alert('ファイルのアップロードに失敗しました');
     } finally {
       setIsUploadingFile(false);
-      if (e.target) e.target.value = '';
     }
   };
 
@@ -541,8 +550,8 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
             {/* Chat Input */}
             <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-sidebar)' }}>
               <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
-                <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={e => handleFileUpload(e, 'file')} />
-                <input type="file" ref={imageInputRef} accept="image/*" style={{ display: 'none' }} onChange={e => handleFileUpload(e, 'image')} />
+                <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={e => handleFileSelect(e, 'file')} />
+                <input type="file" ref={imageInputRef} accept="image/*" style={{ display: 'none' }} onChange={e => handleFileSelect(e, 'image')} />
                 <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploadingFile} className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: isUploadingFile ? 'wait' : 'pointer', opacity: isUploadingFile ? 0.5 : 1 }} title="ファイルを添付">
                   <Paperclip size={20} />
                 </button>
@@ -629,6 +638,35 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
           currentUser={currentUser}
           onClose={() => setShowGroupSettings(false)}
         />
+      )}
+      
+      {stagedFile && (
+        <div className="modal-overlay" onClick={handleCancelFileUpload}>
+          <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>送信の確認</h3>
+              <button className="modal-close" onClick={handleCancelFileUpload}><X size={20}/></button>
+            </div>
+            <div className="modal-body" style={{ textAlign: 'center' }}>
+              <p style={{ marginBottom: '16px' }}>以下の{stagedFile.type === 'image' ? '画像' : 'ファイル'}を送信しますか？</p>
+              {stagedFile.type === 'image' ? (
+                <img src={URL.createObjectURL(stagedFile.file)} alt="preview" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginBottom: '16px' }} />
+              ) : (
+                <div style={{ padding: '16px', background: 'var(--bg-panel)', borderRadius: '8px', marginBottom: '16px', wordBreak: 'break-all' }}>
+                  <Paperclip size={24} style={{ marginBottom: '8px', color: 'var(--text-muted)' }} />
+                  <div style={{ fontWeight: 'bold' }}>{stagedFile.file.name}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{Math.round(stagedFile.file.size / 1024)} KB</div>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button className="btn" onClick={handleCancelFileUpload} disabled={isUploadingFile}>キャンセル</button>
+              <button className="btn btn-primary" onClick={handleConfirmFileUpload} disabled={isUploadingFile}>
+                {isUploadingFile ? '送信中...' : <><Send size={16} /> 送信する</>}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
