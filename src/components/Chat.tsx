@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Paperclip, Image as ImageIcon, Smile, MoreVertical, CheckCheck, MessageSquare, Users, Trash2 } from 'lucide-react';
+import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2 } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../lib/firebase';
 import NewGroupModal from './NewGroupModal';
 import NewChatModal from './NewChatModal';
-import { UserPlus } from 'lucide-react';
+import GroupSettingsModal from './GroupSettingsModal';
+import { UserPlus, Settings as SettingsIcon } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 
 export default function Chat({ currentUser, initialTargetUserId }: { currentUser: any, initialTargetUserId?: string | null }) {
@@ -14,10 +16,14 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
   const [message, setMessage] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [activeReactionMsgId, setActiveReactionMsgId] = useState<string | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -113,6 +119,15 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
     return () => unsubscribe();
   }, [selectedRoom?.id, currentUser?.uid]);
 
+  // 4. Reset unreadCount when viewing a room
+  useEffect(() => {
+    if (selectedRoom?.id && selectedRoom.unreadCount && selectedRoom.unreadCount[currentUser?.uid] > 0) {
+      updateDoc(doc(db, 'chatRooms', selectedRoom.id), {
+        [`unreadCount.${currentUser.uid}`]: 0
+      }).catch(console.error);
+    }
+  }, [selectedRoom, messages, currentUser?.uid]);
+
   const handleDeleteMessage = async (msgId: string) => {
     if (window.confirm('送信を取り消しますか？')) {
       await updateDoc(doc(db, `chatRooms/${selectedRoom.id}/messages`, msgId), {
@@ -152,6 +167,15 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
     setMessage('');
     
     try {
+      // Calculate new unread counts
+      const currentUnread = selectedRoom.unreadCount || {};
+      const newUnreadCount = { ...currentUnread };
+      selectedRoom.members.forEach((m: string) => {
+        if (m !== currentUser.uid) {
+          newUnreadCount[m] = (newUnreadCount[m] || 0) + 1;
+        }
+      });
+
       // Add message
       await addDoc(collection(db, `chatRooms/${selectedRoom.id}/messages`), {
         text: msgText,
@@ -160,13 +184,14 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
         readBy: []
       });
       
-      // Update room lastMessage
+      // Update room lastMessage and unreadCount
       await updateDoc(doc(db, 'chatRooms', selectedRoom.id), {
         lastMessage: {
           text: msgText,
           senderId: currentUser.uid,
           createdAt: serverTimestamp()
         },
+        unreadCount: newUnreadCount,
         updatedAt: serverTimestamp()
       });
     } catch (e) {
@@ -174,13 +199,65 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'file') => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedRoom) return;
+
+    setIsUploadingFile(true);
+    try {
+      const fileRef = ref(storage, `chatRooms/${selectedRoom.id}/${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+
+      const currentUnread = selectedRoom.unreadCount || {};
+      const newUnreadCount = { ...currentUnread };
+      selectedRoom.members.forEach((m: string) => {
+        if (m !== currentUser.uid) {
+          newUnreadCount[m] = (newUnreadCount[m] || 0) + 1;
+        }
+      });
+
+      const messageData: any = {
+        text: type === 'image' ? '画像を送信しました' : `ファイルを送信しました: ${file.name}`,
+        senderId: currentUser.uid,
+        createdAt: serverTimestamp(),
+        readBy: [],
+        fileUrl: url,
+        fileName: file.name,
+        fileType: type
+      };
+
+      await addDoc(collection(db, `chatRooms/${selectedRoom.id}/messages`), messageData);
+      
+      await updateDoc(doc(db, 'chatRooms', selectedRoom.id), {
+        lastMessage: {
+          text: messageData.text,
+          senderId: currentUser.uid,
+          createdAt: serverTimestamp()
+        },
+        unreadCount: newUnreadCount,
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("File upload error", err);
+      alert('ファイルのアップロードに失敗しました');
+    } finally {
+      setIsUploadingFile(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
   const handleCreateGroup = async (name: string, selectedMembers: string[]) => {
     try {
       const members = [...selectedMembers, currentUser.uid];
+      const initialUnread: Record<string, number> = {};
+      members.forEach(m => initialUnread[m] = 0);
+
       await addDoc(collection(db, 'chatRooms'), {
         type: 'group',
         name,
         members,
+        unreadCount: initialUnread,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         lastMessage: null
@@ -207,6 +284,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
       await setDoc(doc(db, 'chatRooms', dmId1), {
         type: 'direct',
         members: [currentUser.uid, userId],
+        unreadCount: { [currentUser.uid]: 0, [userId]: 0 },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         lastMessage: null
@@ -299,6 +377,11 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                     ) : 'メッセージはまだありません'}
                   </div>
                 </div>
+                {room.unreadCount && room.unreadCount[currentUser.uid] > 0 && (
+                  <div style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '12px', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px' }}>
+                    {room.unreadCount[currentUser.uid]}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -333,16 +416,13 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                 })()}
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  className="icon-btn" 
-                  onClick={handleDeleteRoom}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
-                  title="チャットを削除"
-                >
-                  <Trash2 size={18} />
-                </button>
-                <button className="icon-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                  <MoreVertical size={20} />
+                {selectedRoom.type === 'group' && (
+                  <button onClick={() => setShowGroupSettings(true)} className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }} title="グループ設定">
+                    <SettingsIcon size={20} />
+                  </button>
+                )}
+                <button onClick={handleDeleteRoom} className="icon-btn" style={{ padding: '8px', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }} title="チャットを削除">
+                  <Trash2 size={20} />
                 </button>
               </div>
             </div>
@@ -391,7 +471,22 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
                             fontStyle: msg.isDeleted ? 'italic' : 'normal',
                             whiteSpace: 'pre-wrap'
                           }}>
-                            {msg.isDeleted ? '送信を取り消しました' : msg.text}
+                            {msg.isDeleted ? '送信を取り消しました' : (
+                              msg.fileUrl ? (
+                                msg.fileType === 'image' ? (
+                                  <div>
+                                    <img src={msg.fileUrl} alt="添付画像" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', cursor: 'pointer' }} onClick={() => window.open(msg.fileUrl, '_blank')} />
+                                  </div>
+                                ) : (
+                                  <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'underline' }}>
+                                    <Paperclip size={16} />
+                                    {msg.fileName || '添付ファイル'}
+                                  </a>
+                                )
+                              ) : (
+                                msg.text
+                              )
+                            )}
                           </div>
 
                           {/* Reactions display */}
@@ -446,10 +541,12 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
             {/* Chat Input */}
             <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-sidebar)' }}>
               <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
-                <button type="button" className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }} title="ファイルを添付">
+                <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={e => handleFileUpload(e, 'file')} />
+                <input type="file" ref={imageInputRef} accept="image/*" style={{ display: 'none' }} onChange={e => handleFileUpload(e, 'image')} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploadingFile} className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: isUploadingFile ? 'wait' : 'pointer', opacity: isUploadingFile ? 0.5 : 1 }} title="ファイルを添付">
                   <Paperclip size={20} />
                 </button>
-                <button type="button" className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }} title="画像を添付">
+                <button type="button" onClick={() => imageInputRef.current?.click()} disabled={isUploadingFile} className="icon-btn" style={{ padding: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: isUploadingFile ? 'wait' : 'pointer', opacity: isUploadingFile ? 0.5 : 1 }} title="画像を添付">
                   <ImageIcon size={20} />
                 </button>
                 <div style={{ flex: 1, backgroundColor: 'var(--bg-body)', borderRadius: '24px', padding: '8px 16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center' }}>
@@ -524,6 +621,13 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
           onClose={() => setShowNewChat(false)} 
           onCreate={handleCreateChat} 
           currentUser={currentUser} 
+        />
+      )}
+      {showGroupSettings && selectedRoom && selectedRoom.type === 'group' && (
+        <GroupSettingsModal 
+          room={selectedRoom}
+          currentUser={currentUser}
+          onClose={() => setShowGroupSettings(false)}
         />
       )}
     </div>

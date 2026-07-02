@@ -19,8 +19,9 @@ import Directory from './components/Directory';
 import MySchedule from './components/MySchedule';
 import SettingsView from './components/Settings';
 import TeamCalendar from './components/TeamCalendar';
-import NotificationProvider from './components/NotificationProvider';
 import Chat from './components/Chat';
+import NotificationProvider from './components/NotificationProvider';
+import { collection, query, where } from 'firebase/firestore';
 
 // Mock data removed
 
@@ -31,6 +32,7 @@ function App() {
   const [targetUserIdForChat, setTargetUserIdForChat] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [totalUnreadChat, setTotalUnreadChat] = useState(0);
 
   // Apply theme to document element
   useEffect(() => {
@@ -71,6 +73,23 @@ function App() {
       }
     };
   }, []);
+
+  // Calculate total unread chats
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const q = query(collection(db, 'chatRooms'), where('members', 'array-contains', currentUser.uid));
+    const unsubscribe = onSnapshot(q, (snapshot: any) => {
+      let count = 0;
+      snapshot.forEach((doc: any) => {
+        const room = doc.data();
+        if (room.unreadCount && room.unreadCount[currentUser.uid]) {
+          count += room.unreadCount[currentUser.uid];
+        }
+      });
+      setTotalUnreadChat(count);
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
 
   // Handle Online Presence
   useEffect(() => {
@@ -158,9 +177,24 @@ function App() {
             <Users size={18} />
             <span>ディレクトリ</span>
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }} style={{ position: 'relative' }}>
             <MessageSquare size={18} />
-            <span>チャット</span>
+            {!isSidebarCollapsed ? (
+              <span style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+                チャット
+                {totalUnreadChat > 0 && (
+                  <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '12px', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
+                    {totalUnreadChat}
+                  </span>
+                )}
+              </span>
+            ) : (
+              <>
+                {totalUnreadChat > 0 && (
+                  <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#ef4444', width: '8px', height: '8px', borderRadius: '50%' }}></span>
+                )}
+              </>
+            )}
           </a>
           <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }}>
             <Settings size={18} />

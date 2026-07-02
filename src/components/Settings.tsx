@@ -40,12 +40,15 @@ export default function Settings({ currentUser }: { currentUser: any }) {
     return () => unsubscribe();
   }, []);
 
-  const handleNotificationToggle = async (key: 'soundEnabled' | 'popupEnabled', value: boolean) => {
-    if (!currentUser?.uid) return;
-    const currentSettings = currentUser.notifications || {};
+  const handleNotificationToggle = async (type: 'popupEnabled' | 'soundEnabled' | 'chatPopupEnabled' | 'chatSoundEnabled' | 'schedulePopupEnabled' | 'scheduleSoundEnabled', value: boolean) => {
+    if (!currentUser) return;
     try {
+      const updatedNotifications = {
+        ...currentUser.notifications,
+        [type]: value
+      };
       await setDoc(doc(db, 'users', currentUser.uid), {
-        notifications: { ...currentSettings, [key]: value }
+        notifications: updatedNotifications
       }, { merge: true });
     } catch (e) {
       console.error('設定の保存に失敗しました', e);
@@ -318,27 +321,75 @@ export default function Settings({ currentUser }: { currentUser: any }) {
             <h3>リアルタイム通知設定</h3>
           </div>
           <div className="settings-list">
-            <div className="settings-row">
-              <div className="settings-label">ポップアップ通知を表示する</div>
-              <div className="settings-value">
+            <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>バックグラウンド・プッシュ通知</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>アプリを閉じている状態でも通知を受け取ります。</div>
+              <button 
+                className="btn btn-outline" 
+                onClick={async () => {
+                  if (!('Notification' in window)) {
+                    alert('お使いのブラウザはプッシュ通知に対応していません。');
+                    return;
+                  }
+                  const perm = await Notification.requestPermission();
+                  if (perm === 'granted') {
+                    alert('プッシュ通知は許可されています！');
+                  } else if (perm === 'denied') {
+                    alert('プッシュ通知がブロックされています。ブラウザのアドレスバー左側にある鍵マーク（設定）から通知を「許可」に変更してください。');
+                  }
+                }}
+                style={{ padding: '8px 16px', fontSize: '13px' }}
+              >
+                {('Notification' in window && Notification.permission === 'granted') ? '通知許可済み (状態確認)' : 'プッシュ通知を許可する'}
+              </button>
+            </div>
+
+            <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>スケジュール通知</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                <div className="settings-label" style={{ fontSize: '13px' }}>ポップアップ表示</div>
                 <label className="toggle-switch">
                   <input 
                     type="checkbox" 
-                    checked={currentUser?.notifications?.popupEnabled !== false} 
-                    onChange={e => handleNotificationToggle('popupEnabled', e.target.checked)} 
+                    checked={currentUser?.notifications?.schedulePopupEnabled ?? currentUser?.notifications?.popupEnabled ?? true} 
+                    onChange={e => handleNotificationToggle('schedulePopupEnabled', e.target.checked)} 
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                <div className="settings-label" style={{ fontSize: '13px' }}>通知音</div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={currentUser?.notifications?.scheduleSoundEnabled ?? currentUser?.notifications?.soundEnabled ?? true} 
+                    onChange={e => handleNotificationToggle('scheduleSoundEnabled', e.target.checked)} 
                   />
                   <span className="slider"></span>
                 </label>
               </div>
             </div>
-            <div className="settings-row">
-              <div className="settings-label">通知音を鳴らす</div>
-              <div className="settings-value">
+
+            <div className="settings-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '16px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>チャット通知</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                <div className="settings-label" style={{ fontSize: '13px' }}>ポップアップ表示</div>
                 <label className="toggle-switch">
                   <input 
                     type="checkbox" 
-                    checked={currentUser?.notifications?.soundEnabled !== false} 
-                    onChange={e => handleNotificationToggle('soundEnabled', e.target.checked)} 
+                    checked={currentUser?.notifications?.chatPopupEnabled ?? currentUser?.notifications?.popupEnabled ?? true} 
+                    onChange={e => handleNotificationToggle('chatPopupEnabled', e.target.checked)} 
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                <div className="settings-label" style={{ fontSize: '13px' }}>通知音</div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={currentUser?.notifications?.chatSoundEnabled ?? currentUser?.notifications?.soundEnabled ?? true} 
+                    onChange={e => handleNotificationToggle('chatSoundEnabled', e.target.checked)} 
                   />
                   <span className="slider"></span>
                 </label>
