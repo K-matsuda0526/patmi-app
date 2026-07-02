@@ -246,11 +246,6 @@ export default function NotificationProvider({ currentUser, children }: Notifica
   const showToast = (title: string, type: 'chat' | 'schedule') => {
     setToast({ title, type });
     setTimeout(() => setToast(null), 5000);
-    
-    // OS Native Notification if permitted and page is hidden
-    if (Notification.permission === 'granted' && document.hidden) {
-      new Notification(type === 'chat' ? '新着チャット' : 'スケジュール更新', { body: title });
-    }
   };
 
   return (
