@@ -29,10 +29,12 @@ const timeToNum = (timeStr: string) => {
   if (typeof timeStr === 'number') return timeStr;
   if (!timeStr || !timeStr.includes(':')) return 9;
   const [h, m] = timeStr.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return 9;
   return h + (m / 60);
 };
 
 const numToTime = (num: number) => {
+  if (num === undefined || num === null || isNaN(num)) return '09:00';
   const h = Math.floor(num);
   const m = Math.round((num - h) * 60);
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
