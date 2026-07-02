@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2, X } from 'lucide-react';
+import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2, X, ChevronLeft } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
@@ -331,9 +331,9 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
   };
 
   return (
-    <div className="chat-container glass-panel" style={{ display: 'flex', height: 'calc(100vh - 40px)', overflow: 'hidden', padding: 0 }}>
+    <div className={`chat-container glass-panel ${selectedRoom ? 'has-room' : ''}`}>
       {/* Sidebar - Chat List */}
-      <div style={{ width: '300px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-sidebar)' }}>
+      <div className="chat-sidebar">
         <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '18px', margin: 0, color: 'var(--text-sidebar)' }}>トーク</h2>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -398,12 +398,15 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
       </div>
 
       {/* Main Chat Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-body)' }}>
+      <div className="chat-main">
         {selectedRoom ? (
           <>
             {/* Chat Header */}
-            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--bg-sidebar)' }}>
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-sidebar)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button className="mobile-back-btn" onClick={() => setSelectedRoom(null)}>
+                  <ChevronLeft size={24} />
+                </button>
                 {(() => {
                   const display = getRoomDisplay(selectedRoom);
                   return (
