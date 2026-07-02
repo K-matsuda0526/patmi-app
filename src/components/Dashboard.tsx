@@ -79,7 +79,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
       <div className="dashboard-grid">
         
         {/* Status Hub Widget */}
-        <div className="dashboard-card glass-panel status-hub-widget" style={{ gridColumn: 'span 2' }}>
+        <div className="dashboard-card glass-panel status-hub-widget">
           <div className="status-hub-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <h3>現在のステータスを更新</h3>
             <div className="timecard-clock" style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-main)' }}>{timeString}</div>

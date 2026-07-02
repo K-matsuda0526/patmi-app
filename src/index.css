@@ -456,53 +456,8 @@ body {
     padding: 16px;
   }
   
-  .timeline-grid {
-    display: flex;
-    flex-direction: column;
-    border: none;
-    background: transparent;
-    gap: 16px;
-  }
-  
-  .timeline-header-row {
-    display: none;
-  }
-  
-  .timeline-row {
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
-  }
-  
-  .member-info {
-    border: none;
-    padding: 0 0 16px 0;
-    margin-bottom: 16px;
-    border-bottom: 1px solid rgba(150, 150, 150, 0.2);
-  }
-  
-  .schedule-slots {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border: none;
-  }
-  
-  .schedule-block {
-    position: relative;
-    top: 0;
-    bottom: 0;
-    width: 100% !important;
-    left: 0 !important;
-    padding: 8px 12px;
-    border-radius: 6px;
-  }
-  
-  .schedule-grid-line {
-    display: none;
+  .timeline-grid, .week-view, .month-view {
+    min-width: 800px;
   }
 }
 
@@ -799,7 +754,7 @@ body {
     width: 100%;
     height: 70px;
     flex-direction: row;
-    padding: 0 8px;
+    padding: 0 4px;
     border-right: none;
     border-top: 1px solid var(--border-color);
     position: fixed;
@@ -808,25 +763,34 @@ body {
     z-index: 100;
   }
   
-  .sidebar-logo {
-    display: none; /* Hide logo on mobile */
+  .sidebar-logo, .sidebar-header, .sidebar-subtitle {
+    display: none !important; /* Hide logo/header/subtitle on mobile */
   }
   
   .nav-menu {
     flex-direction: row;
     width: 100%;
     justify-content: space-around;
-    gap: 4px;
+    gap: 2px;
     margin: 0;
   }
   
   .nav-item {
     flex-direction: column;
-    padding: 8px 4px;
-    font-size: 10px;
+    padding: 6px 2px;
+    font-size: 8.5px;
     gap: 4px;
     text-align: center;
     border-radius: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .nav-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
   }
 
   .nav-item svg {
@@ -917,7 +881,7 @@ body {
     justify-content: center;
     background: none;
     border: none;
-    color: var(--text-main);
+    color: #3b82f6; /* Blue to stand out */
     cursor: pointer;
     margin-right: 12px;
     padding: 8px;

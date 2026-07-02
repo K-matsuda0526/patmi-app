@@ -148,9 +148,10 @@ function App() {
       <div className="app-container">
       {/* Sidebar Navigation */}
       <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isSidebarCollapsed ? '40px' : '8px' }}>
+        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isSidebarCollapsed ? '40px' : '8px' }}>
           {!isSidebarCollapsed && <div className="sidebar-logo" style={{ fontFamily: 'sans-serif', fontWeight: 800, fontSize: '28px', letterSpacing: '-0.5px', margin: 0 }}>Patmi</div>}
           <button 
+            className="sidebar-toggle"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             title={isSidebarCollapsed ? "メニューを展開" : "メニューを折りたたむ"}

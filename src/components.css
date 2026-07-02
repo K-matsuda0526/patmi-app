@@ -120,6 +120,10 @@
   gap: 24px;
 }
 
+.status-hub-widget {
+  grid-column: 1 / -1;
+}
+
 .dashboard-card {
   padding: 24px;
   border-radius: 12px;

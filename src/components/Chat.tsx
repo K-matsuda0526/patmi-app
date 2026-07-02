@@ -406,6 +406,7 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <button className="mobile-back-btn" onClick={() => setSelectedRoom(null)}>
                   <ChevronLeft size={24} />
+                  <span style={{ fontSize: '14px', fontWeight: 'bold' }}>戻る</span>
                 </button>
                 {(() => {
                   const display = getRoomDisplay(selectedRoom);
