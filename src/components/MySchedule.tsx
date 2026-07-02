@@ -17,6 +17,13 @@ const timeToNum = (timeStr: string) => {
   return h + (m / 60);
 };
 
+const TIME_OPTIONS: string[] = [];
+for (let h = 0; h < 24; h++) {
+  for (let m = 0; m < 60; m += 15) {
+    TIME_OPTIONS.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+  }
+}
+
 const numToTime = (num: number) => {
   if (num === undefined || num === null || isNaN(num)) return '09:00';
   const h = Math.floor(num);
@@ -317,11 +324,23 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                 <div className="input-row">
                   <div className="input-group-vertical">
                     <label>開始時間</label>
-                    <input type="time" step="900" value={modalData.start} onChange={e => setModalData({...modalData, start: e.target.value})} />
+                    <select 
+                      value={modalData.start} 
+                      onChange={e => setModalData({...modalData, start: e.target.value})}
+                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '15px', backgroundColor: 'var(--bg-panel)', color: 'var(--text-main)' }}
+                    >
+                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
+                    </select>
                   </div>
                   <div className="input-group-vertical">
                     <label>終了時間</label>
-                    <input type="time" step="900" value={modalData.end} onChange={e => setModalData({...modalData, end: e.target.value})} />
+                    <select 
+                      value={modalData.end} 
+                      onChange={e => setModalData({...modalData, end: e.target.value})}
+                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '15px', backgroundColor: 'var(--bg-panel)', color: 'var(--text-main)' }}
+                    >
+                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
+                    </select>
                   </div>
                 </div>
               )}
