@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2, X, ChevronLeft } from 'lucide-react';
-import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, setDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import NewGroupModal from './NewGroupModal';
@@ -38,15 +38,18 @@ export default function Chat({ currentUser, initialTargetUserId }: { currentUser
 
   // 1. Fetch all users to build cache
   useEffect(() => {
-    const fetchUsers = async () => {
-      const snapshot = await getDocs(collection(db, 'users'));
+    const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
       const cache: Record<string, any> = {};
+      const now = Date.now();
       snapshot.forEach(doc => {
-        cache[doc.id] = { id: doc.id, ...doc.data() };
+        const data = doc.data();
+        const lastActiveTime = data.lastActive ? new Date(data.lastActive).getTime() : 0;
+        const isActuallyOnline = data.isOnline && (now - lastActiveTime < 5 * 60 * 1000);
+        cache[doc.id] = { id: doc.id, ...data, isOnline: isActuallyOnline };
       });
       setUserCache(cache);
-    };
-    fetchUsers();
+    });
+    return () => unsubscribe();
   }, []);
 
   // 2. Fetch or auto-create direct message rooms for all users

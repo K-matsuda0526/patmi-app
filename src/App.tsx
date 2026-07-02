@@ -122,7 +122,15 @@ function App() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
+    // Heartbeat every 3 minutes while visible
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        updateOnlineStatus(true);
+      }
+    }, 3 * 60 * 1000);
+
     return () => {
+      clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       updateOnlineStatus(false);

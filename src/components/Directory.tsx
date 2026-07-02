@@ -32,11 +32,18 @@ export default function Directory({ onStartChat }: { onStartChat?: (userId: stri
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
-      const usersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        emails: doc.data().emails || []
-      }));
+      const now = Date.now();
+      const usersData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        const lastActiveTime = data.lastActive ? new Date(data.lastActive).getTime() : 0;
+        const isActuallyOnline = data.isOnline && (now - lastActiveTime < 5 * 60 * 1000);
+        return {
+          id: doc.id,
+          ...data,
+          isOnline: isActuallyOnline,
+          emails: data.emails || []
+        };
+      });
       setMembers(usersData);
     });
     return () => unsubscribe();

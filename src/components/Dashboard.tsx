@@ -37,13 +37,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
 
   const todaysSchedules = (currentUser?.schedules || [])
     .filter((s: any) => todayStr >= (s.date || '') && todayStr <= (s.endDate || s.date || ''))
-    .sort((a: any, b: any) => a.start - b.start);
-
-  const numToTime = (num: number) => {
-    const h = Math.floor(num);
-    const m = Math.round((num - h) * 60);
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  };
+    .sort((a: any, b: any) => (a.start || '').localeCompare(b.start || ''));
 
   // Update Firestore when status changes
   const handleStatusChange = async (newStatus: 'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline' | 'holiday') => {
@@ -129,7 +123,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             ) : (
               todaysSchedules.map((schedule: any) => (
                 <div key={schedule.id} className="schedule-item" style={{ padding: '12px', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : `var(--accent-${schedule.color || 'blue'})` }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{schedule.isAllDay ? '終日' : `${numToTime(schedule.start)} - ${numToTime(schedule.end)}`}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{schedule.isAllDay ? '終日' : `${schedule.start} - ${schedule.end}`}</div>
                   <div style={{ fontSize: '15px' }}>{schedule.title}</div>
                 </div>
               ))
