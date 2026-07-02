@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2 } from 'lucide-react';
+import { Send, Paperclip, Image as ImageIcon, Smile, CheckCheck, MessageSquare, Users, Trash2, X } from 'lucide-react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, doc, serverTimestamp, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
