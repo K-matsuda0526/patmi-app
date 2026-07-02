@@ -448,11 +448,6 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                 key={i} 
                 className={isHol ? 'holiday-cell' : ''}
                 style={{ background: isHol ? 'var(--accent-pink)' : (isToday ? 'var(--me-bg)' : 'var(--bg-card)'), minHeight: '100px', padding: '4px', opacity: isCurrentMonth ? 1 : 0.4 }} 
-                onClick={() => {
-                  // Switch to day view for this date
-                  setCalendarView('day');
-                  setCalendarDate(new Date(date));
-                }}
               >
                 <div className="date-number" style={{ textAlign: 'right', fontSize: '12px', marginBottom: '4px', paddingRight: '4px', fontWeight: isToday ? 'bold' : 'normal', color: isHol ? '#ef4444' : 'inherit' }}>
                   {date.getDate()}
