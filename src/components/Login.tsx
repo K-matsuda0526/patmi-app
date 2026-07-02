@@ -14,6 +14,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [branch, setBranch] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,8 +61,8 @@ export default function Login() {
     setLoading(true);
     try {
       if (isRegistering) {
-        if (!name.trim()) {
-          setError('名前を入力してください。');
+        if (!name.trim() || !branch) {
+          setError('名前と営業所を入力・選択してください。');
           setLoading(false);
           return;
         }
@@ -69,7 +70,7 @@ export default function Login() {
         // Create user document in Firestore
         await setDoc(doc(db, 'users', userCred.user.uid), {
           name: name,
-          branch: '東京営業所', // Default
+          branch: branch,
           title: 'メンバー', // Default
           status: 'office',
           emails: [email],
@@ -139,15 +140,34 @@ export default function Login() {
           {error && <div className="login-error">{error}</div>}
           
           {isRegistering && (
-            <div className="input-group">
-              <div className="input-icon"><User size={16} /></div>
-              <input 
-                type="text" 
-                placeholder="氏名 (例: 山田 太郎)" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+            <>
+              <div className="input-group">
+                <div className="input-icon"><User size={16} /></div>
+                <input 
+                  type="text" 
+                  placeholder="氏名 (例: 山田 太郎)" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="input-group">
+                <div className="input-icon"><User size={16} /></div>
+                <select 
+                  className="search-input" 
+                  value={branch} 
+                  onChange={(e) => setBranch(e.target.value)}
+                  style={{ width: '100%', padding: '12px 12px 12px 40px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'var(--bg-body)', color: 'var(--text-main)', fontSize: '15px' }}
+                >
+                  <option value="">営業所を選択してください</option>
+                  <option value="本社">本社</option>
+                  <option value="三宅工場">三宅工場</option>
+                  <option value="坪井工場">坪井工場</option>
+                  <option value="大阪営業所">大阪営業所</option>
+                  <option value="福岡営業所">福岡営業所</option>
+                  <option value="横浜営業所">横浜営業所</option>
+                </select>
+              </div>
+            </>
           )}
 
           <div className="input-group">

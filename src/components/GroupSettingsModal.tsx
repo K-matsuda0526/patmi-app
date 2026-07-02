@@ -101,8 +101,8 @@ export default function GroupSettingsModal({ room, currentUser, onClose }: Group
               type="text" 
               value={groupName} 
               onChange={e => setGroupName(e.target.value)} 
-              disabled={!isEditingName || loading}
-              style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: isEditingName ? 'var(--bg-body)' : 'var(--bg-sidebar)', color: 'var(--text-main)' }} 
+              disabled={!isEditingName}
+              style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-main)' }} 
             />
             {isEditingName ? (
               <button onClick={handleUpdateName} disabled={loading} className="btn-primary" style={{ padding: '8px 16px', borderRadius: '8px' }}>
@@ -121,7 +121,7 @@ export default function GroupSettingsModal({ room, currentUser, onClose }: Group
           {availableUsers.length === 0 ? (
             <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>追加できるメンバーがいません</div>
           ) : (
-            <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', marginBottom: '16px', backgroundColor: 'var(--bg-body)' }}>
+            <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', marginBottom: '16px', backgroundColor: 'transparent' }}>
               {availableUsers.map(user => (
                 <div key={user.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid var(--border-color)' }}>
                   <input 

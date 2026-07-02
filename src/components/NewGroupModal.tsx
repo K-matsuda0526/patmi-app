@@ -65,7 +65,7 @@ export default function NewGroupModal({
           
           <div className="input-group-vertical">
             <label>メンバーを選択 ({selectedUsers.length}名選択中)</label>
-            <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-body)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', marginBottom: '8px' }}>
               <Search size={16} color="var(--text-muted)" style={{ marginRight: '8px' }} />
               <input 
                 type="text" 
