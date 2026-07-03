@@ -618,10 +618,10 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                   </button>
                 )}
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="btn" onClick={closeModal}>キャンセル</button>
-                <button className="btn btn-primary" onClick={handleSave}>保存する</button>
-              </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className="btn" onClick={closeModal}>キャンセル</button>
+                  <button className="btn btn-primary" onClick={handleSave} disabled={!modalData.title.trim()}>保存する</button>
+                </div>
             </div>
           </div>
         </div>
