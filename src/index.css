@@ -311,8 +311,11 @@ body {
 
 /* Calendar View */
 .calendar-container {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
   padding: 24px 40px;
 }
 
@@ -322,7 +325,12 @@ body {
   background: var(--bg-card);
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  overflow: hidden;
+  overflow-x: auto;
+  min-width: 800px;
+}
+
+.month-view, .week-view {
+  min-width: 800px;
 }
 
 .timeline-header-row {
@@ -454,10 +462,6 @@ body {
   
   .calendar-container {
     padding: 16px;
-  }
-  
-  .timeline-grid, .week-view, .month-view {
-    min-width: 800px;
   }
 }
 
