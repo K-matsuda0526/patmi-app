@@ -552,7 +552,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
         </div>
       </header>
       
-      <div className="calendar-container relative-container" style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="calendar-container relative-container" style={{ flex: 1, overflow: 'auto' }}>
         {calendarView === 'day' && renderDayView()}
         {calendarView === 'week' && renderWeekView()}
         {calendarView === 'month' && renderMonthView()}
