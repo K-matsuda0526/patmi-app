@@ -22,13 +22,17 @@
   --active-bg: rgba(92, 77, 74, 0.05);
   --active-border: #d4c8c6;
   
-  --status-office: #3b82f6;
-  --status-biztrip: #10b981;
-  --status-out: #8b5cf6;
-  --status-meeting: #ef4444;
-  --status-away: #f59e0b;
-  --status-offline: #6b7280;
+  --status-hq: #3b82f6;
+  --status-miyake: #10b981;
+  --status-tsuboi: #8b5cf6;
+  --status-osaka: #ef4444;
+  --status-fukuoka: #f59e0b;
+  --status-yokohama: #0ea5e9;
+  --status-onsite: #84cc16;
+  --status-biztrip: #14b8a6;
   --status-holiday: #ec4899;
+  --status-offline: #6b7280;
+  --status-away: #d97706;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -51,13 +55,17 @@
   --active-bg: rgba(248, 250, 252, 0.1);
   --active-border: #94a3b8;
   
-  --status-office: #3b82f6;
-  --status-biztrip: #10b981;
-  --status-out: #8b5cf6;
-  --status-meeting: #ef4444;
-  --status-away: #f59e0b;
-  --status-offline: #6b7280;
+  --status-hq: #3b82f6;
+  --status-miyake: #10b981;
+  --status-tsuboi: #8b5cf6;
+  --status-osaka: #ef4444;
+  --status-fukuoka: #f59e0b;
+  --status-yokohama: #0ea5e9;
+  --status-onsite: #84cc16;
+  --status-biztrip: #14b8a6;
   --status-holiday: #ec4899;
+  --status-offline: #6b7280;
+  --status-away: #d97706;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -80,13 +88,17 @@
   --active-bg: rgba(147, 102, 57, 0.08);
   --active-border: #936639;
   
-  --status-office: #936639; /* Primary */
-  --status-biztrip: #7D904B; /* Secondary */
-  --status-out: #C68642; /* Tertiary */
-  --status-meeting: #b05c5a;
-  --status-away: #d4a373;
-  --status-offline: #707670; /* Neutral */
-  --status-holiday: #c57b85; /* Muted pink */
+  --status-hq: #936639;
+  --status-miyake: #7D904B;
+  --status-tsuboi: #C68642;
+  --status-osaka: #b05c5a;
+  --status-fukuoka: #d4a373;
+  --status-yokohama: #7c98ab;
+  --status-onsite: #8ca373;
+  --status-biztrip: #4a7c59;
+  --status-holiday: #c57b85;
+  --status-offline: #707670;
+  --status-away: #c8963e;
   
   --me-bg: rgba(210, 160, 90, 0.15); /* Warm pale yellow highlight */
 }

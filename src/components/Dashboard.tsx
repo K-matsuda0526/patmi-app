@@ -4,7 +4,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  */
 
-import { CalendarDays, Briefcase, Building2, Coffee, Video, Power, ExternalLink, MapPin, Palmtree } from 'lucide-react';
+import { CalendarDays, Briefcase, Building2, Coffee, Power, ExternalLink, MapPin, Palmtree } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -13,10 +13,12 @@ interface DashboardProps {
   currentUser: any;
 }
 
+type StatusType = 'hq' | 'miyake' | 'tsuboi' | 'osaka' | 'fukuoka' | 'yokohama' | 'onsite' | 'biztrip' | 'holiday' | 'away' | 'offline';
+
 export default function Dashboard({ currentUser }: DashboardProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   // Load initial status from user profile if exists, default to 'office'
-  const [currentStatus, setCurrentStatus] = useState<'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline' | 'holiday'>(currentUser?.status || 'office');
+  const [currentStatus, setCurrentStatus] = useState<StatusType>((currentUser?.status as StatusType) || 'hq');
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -40,7 +42,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
     .sort((a: any, b: any) => (a.start || '').localeCompare(b.start || ''));
 
   // Update Firestore when status changes
-  const handleStatusChange = async (newStatus: 'office' | 'biztrip' | 'out' | 'meeting' | 'away' | 'offline' | 'holiday') => {
+  const handleStatusChange = async (newStatus: StatusType) => {
     setCurrentStatus(newStatus);
     const uid = currentUser?.uid || currentUser?.id;
     if (uid) {
@@ -79,37 +81,53 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             <div className="timecard-clock" style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-main)' }}>{timeString}</div>
           </div>
           
-          <div className="status-toggles">
-            <button className={`status-btn ${currentStatus === 'office' ? 'active status-office' : ''}`} onClick={() => handleStatusChange('office')}>
-              <Building2 size={24} />
-              <span>社内</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'biztrip' ? 'active status-biztrip' : ''}`} onClick={() => handleStatusChange('biztrip')}>
-              <Briefcase size={24} />
-              <span>出張中</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'out' ? 'active status-out' : ''}`} onClick={() => handleStatusChange('out')}>
-              <MapPin size={24} />
-              <span>外出中</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'meeting' ? 'active status-meeting' : ''}`} onClick={() => handleStatusChange('meeting')}>
-              <Video size={24} />
-              <span>ミーティング中</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'away' ? 'active status-away' : ''}`} onClick={() => handleStatusChange('away')}>
-              <Coffee size={24} />
-              <span>休憩・離席中</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'offline' ? 'active status-offline' : ''}`} onClick={() => handleStatusChange('offline')}>
-              <Power size={24} />
-              <span>退勤済 (オフ)</span>
-            </button>
-            <button className={`status-btn ${currentStatus === 'holiday' ? 'active status-holiday' : ''}`} onClick={() => handleStatusChange('holiday')}>
-              <Palmtree size={24} />
-              <span>休暇</span>
-            </button>
+                      <div className="status-toggles">
+              <button className={`status-btn ${currentStatus === 'hq' ? 'active status-hq' : ''}`} onClick={() => handleStatusChange('hq')}>
+                <Building2 size={24} />
+                <span>本社</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'miyake' ? 'active status-miyake' : ''}`} onClick={() => handleStatusChange('miyake')}>
+                <Building2 size={24} />
+                <span>三宅工場</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'tsuboi' ? 'active status-tsuboi' : ''}`} onClick={() => handleStatusChange('tsuboi')}>
+                <Building2 size={24} />
+                <span>坪井工場</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'osaka' ? 'active status-osaka' : ''}`} onClick={() => handleStatusChange('osaka')}>
+                <MapPin size={24} />
+                <span>大阪営業所</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'fukuoka' ? 'active status-fukuoka' : ''}`} onClick={() => handleStatusChange('fukuoka')}>
+                <MapPin size={24} />
+                <span>福岡営業所</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'yokohama' ? 'active status-yokohama' : ''}`} onClick={() => handleStatusChange('yokohama')}>
+                <MapPin size={24} />
+                <span>横浜営業所</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'onsite' ? 'active status-onsite' : ''}`} onClick={() => handleStatusChange('onsite')}>
+                <Briefcase size={24} />
+                <span>現場</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'biztrip' ? 'active status-biztrip' : ''}`} onClick={() => handleStatusChange('biztrip')}>
+                <Briefcase size={24} />
+                <span>出張</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'holiday' ? 'active status-holiday' : ''}`} onClick={() => handleStatusChange('holiday')}>
+                <Palmtree size={24} />
+                <span>休暇</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'away' ? 'active status-away' : ''}`} onClick={() => handleStatusChange('away')}>
+                <Coffee size={24} />
+                <span>離席</span>
+              </button>
+              <button className={`status-btn ${currentStatus === 'offline' ? 'active status-offline' : ''}`} onClick={() => handleStatusChange('offline')}>
+                <Power size={24} />
+                <span>退勤</span>
+              </button>
+            </div>
           </div>
-        </div>
 
         {/* Today's Personal Schedule */}
         <div className="dashboard-card glass-panel">

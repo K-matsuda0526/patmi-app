@@ -51,6 +51,19 @@ const getDayOfWeek = (date: Date) => {
   return ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
 };
 
+
+export const STATUS_LABELS: Record<string, string> = {
+  hq: '本社',
+  miyake: '三宅工場',
+  tsuboi: '坪井工場',
+  osaka: '大阪営業所',
+  fukuoka: '福岡営業所',
+  yokohama: '横浜営業所',
+  onsite: '現場',
+  biztrip: '出張',
+  holiday: '休暇'
+};
+
 export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const [members, setMembers] = useState<any[]>([]);
   const [selectedBranch, setSelectedBranch] = useState('全体');
@@ -77,7 +90,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   const todayFormatted = getLocalDateString(calendarDate);
   const todayDisplay = calendarDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
-  const [modalData, setModalData] = useState({ title: '', start: '09:00', end: '10:00', color: 'blue', date: todayFormatted, endDate: todayFormatted, isAllDay: false });
+  const [modalData, setModalData] = useState({ title: '', start: '09:00', end: '10:00', color: 'blue', status: 'hq', date: todayFormatted, endDate: todayFormatted, isAllDay: false });
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -119,13 +132,14 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
         start: typeof schedule.start === 'number' ? numToTime(schedule.start) : schedule.start,
         end: typeof schedule.end === 'number' ? numToTime(schedule.end) : schedule.end,
         color: schedule.color || 'blue',
+          status: schedule.status || 'hq',
         date: schedule.date || todayFormatted,
         endDate: schedule.endDate || schedule.date || todayFormatted,
         isAllDay: schedule.isAllDay || false
       });
     } else {
       setEditingScheduleId(null);
-      setModalData({ title: '', start: '09:00', end: '10:00', color: 'blue', date: defaultDate || todayFormatted, endDate: defaultDate || todayFormatted, isAllDay: false });
+      setModalData({ title: '', start: '09:00', end: '10:00', color: 'blue', status: 'hq', date: defaultDate || todayFormatted, endDate: defaultDate || todayFormatted, isAllDay: false });
     }
     setIsModalOpen(true);
   };
@@ -286,7 +300,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                 }
               }}
             >
-              {schedule.title}
+              {schedule.status ? `[${STATUS_LABELS[schedule.status] || schedule.status}] ` : ''}{schedule.title}
             </div>
           );
         });
@@ -395,7 +409,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                           style={{ marginBottom: '4px', padding: '2px 4px', borderRadius: '4px', fontSize: '11px', cursor: isMe ? 'pointer' : 'default', lineHeight: 1.2 }}
                           onClick={(e) => { if (isMe) { e.stopPropagation(); openModal(schedule); } }}
                         >
-                          <div style={{ fontWeight: 'bold' }}>{schedule.title}</div>
+                          <div style={{ fontWeight: 'bold' }}>{schedule.status ? `[${STATUS_LABELS[schedule.status] || schedule.status}] ` : ''}{schedule.title}</div>
                           <div style={{ opacity: 0.8, fontSize: '10px' }}>{schedule.start} - {schedule.end}</div>
                         </div>
                       ))}
@@ -467,9 +481,9 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                           } 
                         }}
                       >
-                        <span className={`status-dot status-${schedule.member.status || 'office'}`} style={{ marginRight: '2px', width: '6px', height: '6px', flexShrink: 0 }}></span>
+                        
                         <span style={{ fontWeight: 'bold', marginRight: '4px', opacity: 0.7 }}>{schedule.member.name?.substring(0,2)}</span>
-                        {schedule.title}
+                        {schedule.status ? `[${STATUS_LABELS[schedule.status] || schedule.status}] ` : ''}{schedule.title}
                       </div>
                     );
                   })}
