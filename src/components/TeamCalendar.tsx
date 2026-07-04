@@ -12,19 +12,6 @@ import { isHoliday } from '../lib/holidays';
 
 const branches = ['全体', '本社', '三宅工場', '坪井工場', '大阪営業所', '福岡営業所', '横浜営業所'];
 
-const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
-    office: '出社',
-    biztrip: '出張',
-    out: '外出',
-    meeting: '会議',
-    away: '離席',
-    offline: '退勤',
-    holiday: '休暇'
-  };
-  return map[status] || status;
-};
-
 const TIME_OPTIONS: string[] = [];
 for (let h = 0; h < 24; h++) {
   for (let m = 0; m < 60; m += 15) {
@@ -61,7 +48,16 @@ export const STATUS_LABELS: Record<string, string> = {
   yokohama: '横浜営業所',
   onsite: '現場',
   biztrip: '出張',
-  holiday: '休暇'
+  holiday: '休暇',
+  office: '出社',
+  out: '外出',
+  meeting: '会議',
+  away: '離席',
+  offline: '退勤'
+};
+
+const getStatusLabel = (status: string) => {
+  return STATUS_LABELS[status] || status;
 };
 
 export default function TeamCalendar({ currentUser }: { currentUser: any }) {
