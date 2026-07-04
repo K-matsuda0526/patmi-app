@@ -75,13 +75,6 @@ export default function Directory({ onStartChat }: { onStartChat?: (userId: stri
           <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-away"></span>離席</div>
           <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-offline"></span>退勤</div>
         </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-biztrip"></span>出張</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-out"></span>外出</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-meeting"></span>会議</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-away"></span>離席</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-offline"></span>退勤</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-holiday"></span>休暇</div>
-        </div>
       </div>
 
       <div className="directory-grid">
