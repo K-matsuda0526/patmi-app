@@ -366,7 +366,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
 
     return (
       <div className="week-view glass-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 1fr)', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, minmax(0, 1fr))', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
           <div style={{ padding: '8px', fontWeight: 'bold', borderRight: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>メンバー</div>
           {weekDays.map((date, i) => {
             const isHol = isHoliday(date);
@@ -381,7 +381,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           {displayedMembers.map((member) => {
             const isMe = currentUser && (currentUser.uid === member.id || currentUser.id === member.id);
             return (
-              <div key={member.id} style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 1fr)', borderBottom: '1px solid var(--border-color)', background: isMe ? 'var(--me-bg)' : 'transparent' }}>
+              <div key={member.id} style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, minmax(0, 1fr))', borderBottom: '1px solid var(--border-color)', background: isMe ? 'var(--me-bg)' : 'transparent' }}>
                 <div style={{ padding: '8px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span className={`status-badge status-${member.status || 'office'}`} style={{ padding: '2px 4px', borderRadius: '4px', fontSize: '10px', color: '#fff', backgroundColor: `var(--status-${member.status || 'office'})`, whiteSpace: 'nowrap' }}>{getStatusLabel(member.status || 'office')}</span>
@@ -443,10 +443,10 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-away"></span>離席</div>
           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}><span className="status-dot status-offline"></span>退勤</div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', padding: '8px', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', textAlign: 'center', padding: '8px', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold', background: 'var(--bg-card)' }}>
           {['日', '月', '火', '水', '木', '金', '土'].map(d => <div key={d}>{d}</div>)}
         </div>
-        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: 'var(--border-color)' }}>
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '1px', background: 'var(--border-color)' }}>
           {monthDays.map((date, i) => {
             const dateStr = getLocalDateString(date);
             const isCurrentMonth = date.getMonth() === calendarDate.getMonth();
