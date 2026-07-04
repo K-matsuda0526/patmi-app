@@ -607,6 +607,24 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                   </div>
                 )}
               <div className="input-group-vertical">
+                <label>ステータス</label>
+                <select 
+                  value={modalData.status} 
+                  onChange={e => setModalData({...modalData, status: e.target.value})}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '15px', backgroundColor: 'var(--bg-panel)', color: 'var(--text-main)' }}
+                >
+                  <option value="hq">本社</option>
+                  <option value="miyake">三宅工場</option>
+                  <option value="tsuboi">坪井工場</option>
+                  <option value="osaka">大阪営業所</option>
+                  <option value="fukuoka">福岡営業所</option>
+                  <option value="yokohama">横浜営業所</option>
+                  <option value="onsite">現場</option>
+                  <option value="biztrip">出張</option>
+                  <option value="holiday">休暇</option>
+                </select>
+              </div>
+              <div className="input-group-vertical">
                 <label>カラータグ</label>
                 <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {['blue', 'pink', 'green', 'yellow'].map(c => (
