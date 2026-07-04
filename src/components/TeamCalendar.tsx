@@ -618,6 +618,11 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                   <option value="onsite">現場</option>
                   <option value="biztrip">出張</option>
                   <option value="holiday">休暇</option>
+                  <option value="out">外出</option>
+                  <option value="office">出社</option>
+                  <option value="meeting">会議</option>
+                  <option value="away">離席</option>
+                  <option value="offline">退勤</option>
                 </select>
               </div>
               <div className="input-group-vertical">
