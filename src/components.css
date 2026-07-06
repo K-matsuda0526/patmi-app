@@ -221,6 +221,9 @@
 .status-btn.active.status-holiday { border: 2px solid var(--status-holiday); color: var(--status-holiday); background-color: rgba(0, 0, 0, 0.03); }
 .status-btn.active.status-offline { border: 2px solid var(--status-offline); color: var(--status-offline); background-color: rgba(0, 0, 0, 0.03); }
 .status-btn.active.status-away { border: 2px solid var(--status-away); color: var(--status-away); background-color: rgba(0, 0, 0, 0.03); }
+.status-btn.active.status-office { border: 2px solid var(--status-office); color: var(--status-office); background-color: rgba(0, 0, 0, 0.03); }
+.status-btn.active.status-meeting { border: 2px solid var(--status-meeting); color: var(--status-meeting); background-color: rgba(0, 0, 0, 0.03); }
+.status-btn.active.status-out { border: 2px solid var(--status-out); color: var(--status-out); background-color: rgba(0, 0, 0, 0.03); }
 
 /* Status Dots for Name badges */
 .status-dot {
