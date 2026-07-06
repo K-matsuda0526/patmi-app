@@ -98,10 +98,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
                 <Briefcase size={24} />
                 <span>現場</span>
               </button>
-              <button className={`status-btn ${currentStatus === 'biztrip' ? 'active status-biztrip' : ''}`} onClick={() => handleStatusChange('biztrip')}>
-                <Briefcase size={24} />
-                <span>出張</span>
-              </button>
+
               <button className={`status-btn ${currentStatus === 'holiday' ? 'active status-holiday' : ''}`} onClick={() => handleStatusChange('holiday')}>
                 <Palmtree size={24} />
                 <span>休暇</span>
