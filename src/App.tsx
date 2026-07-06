@@ -213,23 +213,23 @@ function App() {
         {!isSidebarCollapsed && <div className="sidebar-subtitle" style={{ fontSize: '11px', letterSpacing: '1px', opacity: 0.8, marginBottom: '40px' }}>スケジュール管理</div>}
         
         <nav className="sidebar-nav">
-          <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }} title={isSidebarCollapsed ? "ダッシュボード" : ""}>
             <LayoutDashboard size={18} />
             <span>ダッシュボード</span>
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('calendar'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('calendar'); }} title={isSidebarCollapsed ? "カレンダー" : ""}>
             <CalendarDays size={18} />
             <span>カレンダー</span>
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'myschedule' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('myschedule'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'myschedule' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('myschedule'); }} title={isSidebarCollapsed ? "マイスケジュール" : ""}>
             <User size={18} />
             <span>マイスケジュール</span>
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'directory' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('directory'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'directory' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('directory'); }} title={isSidebarCollapsed ? "ディレクトリ" : ""}>
             <Users size={18} />
             <span>ディレクトリ</span>
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }} style={{ position: 'relative' }}>
+          <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }} style={{ position: 'relative' }} title={isSidebarCollapsed ? "チャット" : ""}>
             <MessageSquare size={18} />
             {!isSidebarCollapsed ? (
               <span style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
@@ -248,7 +248,7 @@ function App() {
               </>
             )}
           </a>
-          <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }}>
+          <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }} title={isSidebarCollapsed ? "設定" : ""}>
             <Settings size={18} />
             <span>設定</span>
           </a>
