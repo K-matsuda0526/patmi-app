@@ -153,10 +153,8 @@ export default function Login() {
               <div className="input-group">
                 <div className="input-icon"><User size={16} /></div>
                 <select 
-                  className="search-input" 
                   value={branch} 
                   onChange={(e) => setBranch(e.target.value)}
-                  style={{ width: '100%', padding: '12px 12px 12px 40px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'var(--bg-body)', color: 'var(--text-main)', fontSize: '15px' }}
                 >
                   <option value="">営業所を選択してください</option>
                   <option value="本社">本社</option>

@@ -71,7 +71,7 @@
   display: flex;
 }
 
-.input-group input {
+.input-group input, .input-group select {
   flex: 1;
   padding: 12px 0;
   border: none;
