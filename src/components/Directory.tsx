@@ -10,7 +10,8 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 // Helper to get initials
-const getInitials = (name: string) => {
+const getInitials = (name?: string) => {
+  if (!name) return '?';
   return name.charAt(0);
 };
 

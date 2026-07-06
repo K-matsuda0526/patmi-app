@@ -52,10 +52,27 @@ function App() {
         unsubscribeSnapshot = onSnapshot(userDocRef, (snapshot) => {
           if (snapshot.exists()) {
             setCurrentUser({ uid: user.uid, id: user.uid, ...snapshot.data() });
+            setLoading(false);
           } else {
-            setCurrentUser({ uid: user.uid, id: user.uid, name: '新規ユーザー' });
+            // Auto-create missing user document
+            const defaultUser = {
+              name: user.displayName || '未設定ユーザー',
+              branch: '未設定',
+              title: 'メンバー',
+              status: 'office',
+              emails: [user.email || ''],
+              uid: user.uid,
+              createdAt: new Date().toISOString()
+            };
+            setDoc(userDocRef, defaultUser).then(() => {
+              setCurrentUser({ id: user.uid, ...defaultUser });
+              setLoading(false);
+            }).catch(e => {
+              console.error("Failed to create missing user doc", e);
+              setCurrentUser({ uid: user.uid, id: user.uid, name: '新規ユーザー' });
+              setLoading(false);
+            });
           }
-          setLoading(false);
         });
       } else {
         if (unsubscribeSnapshot) {
