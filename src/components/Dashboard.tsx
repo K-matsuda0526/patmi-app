@@ -4,7 +4,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  */
 
-import { CalendarDays, Briefcase, Building2, Coffee, Power, ExternalLink, MapPin, Palmtree } from 'lucide-react';
+import { CalendarDays, Briefcase, Building2, Coffee, Power, ExternalLink, Palmtree } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -13,12 +13,12 @@ interface DashboardProps {
   currentUser: any;
 }
 
-type StatusType = 'hq' | 'miyake' | 'tsuboi' | 'osaka' | 'fukuoka' | 'yokohama' | 'onsite' | 'biztrip' | 'holiday' | 'away' | 'offline';
+type StatusType = 'hq' | 'miyake' | 'tsuboi' | 'osaka' | 'fukuoka' | 'yokohama' | 'onsite' | 'biztrip' | 'holiday' | 'away' | 'offline' | 'office' | 'meeting' | 'out';
 
 export default function Dashboard({ currentUser }: DashboardProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   // Load initial status from user profile if exists, default to 'office'
-  const [currentStatus, setCurrentStatus] = useState<StatusType>((currentUser?.status as StatusType) || 'hq');
+  const [currentStatus, setCurrentStatus] = useState<StatusType>((currentUser?.status as StatusType) || 'office');
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -82,29 +82,17 @@ export default function Dashboard({ currentUser }: DashboardProps) {
           </div>
           
                       <div className="status-toggles">
-              <button className={`status-btn ${currentStatus === 'hq' ? 'active status-hq' : ''}`} onClick={() => handleStatusChange('hq')}>
+              <button className={`status-btn ${currentStatus === 'office' ? 'active status-office' : ''}`} onClick={() => handleStatusChange('office')}>
                 <Building2 size={24} />
-                <span>本社</span>
+                <span>出社 (社内)</span>
               </button>
-              <button className={`status-btn ${currentStatus === 'miyake' ? 'active status-miyake' : ''}`} onClick={() => handleStatusChange('miyake')}>
-                <Building2 size={24} />
-                <span>三宅工場</span>
+              <button className={`status-btn ${currentStatus === 'meeting' ? 'active status-meeting' : ''}`} onClick={() => handleStatusChange('meeting')}>
+                <Briefcase size={24} />
+                <span>会議</span>
               </button>
-              <button className={`status-btn ${currentStatus === 'tsuboi' ? 'active status-tsuboi' : ''}`} onClick={() => handleStatusChange('tsuboi')}>
-                <Building2 size={24} />
-                <span>坪井工場</span>
-              </button>
-              <button className={`status-btn ${currentStatus === 'osaka' ? 'active status-osaka' : ''}`} onClick={() => handleStatusChange('osaka')}>
-                <MapPin size={24} />
-                <span>大阪営業所</span>
-              </button>
-              <button className={`status-btn ${currentStatus === 'fukuoka' ? 'active status-fukuoka' : ''}`} onClick={() => handleStatusChange('fukuoka')}>
-                <MapPin size={24} />
-                <span>福岡営業所</span>
-              </button>
-              <button className={`status-btn ${currentStatus === 'yokohama' ? 'active status-yokohama' : ''}`} onClick={() => handleStatusChange('yokohama')}>
-                <MapPin size={24} />
-                <span>横浜営業所</span>
+              <button className={`status-btn ${currentStatus === 'out' ? 'active status-out' : ''}`} onClick={() => handleStatusChange('out')}>
+                <Briefcase size={24} />
+                <span>外出</span>
               </button>
               <button className={`status-btn ${currentStatus === 'onsite' ? 'active status-onsite' : ''}`} onClick={() => handleStatusChange('onsite')}>
                 <Briefcase size={24} />
