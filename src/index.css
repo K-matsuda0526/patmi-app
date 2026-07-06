@@ -24,18 +24,18 @@
   
   --status-office: #3b82f6;
   --status-meeting: #eab308;
-  --status-out: #8b5cf6;
-  --status-onsite: #d97706;
+  --status-out: #a855f7;
+  --status-onsite: #06b6d4;
   --status-biztrip: #14b8a6;
   --status-holiday: #ef4444;
   --status-away: #f97316;
   --status-offline: #9ca3af;
-  --status-hq: #0284c7;
-  --status-miyake: #16a34a;
+  --status-hq: #334155;
+  --status-miyake: #22c55e;
   --status-tsuboi: #6366f1;
-  --status-osaka: #d946ef;
-  --status-fukuoka: #059669;
-  --status-yokohama: #0ea5e9;
+  --status-osaka: #ec4899;
+  --status-fukuoka: #84cc16;
+  --status-yokohama: #a16207;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -60,18 +60,18 @@
   
   --status-office: #3b82f6;
   --status-meeting: #eab308;
-  --status-out: #8b5cf6;
-  --status-onsite: #d97706;
+  --status-out: #a855f7;
+  --status-onsite: #06b6d4;
   --status-biztrip: #14b8a6;
   --status-holiday: #ef4444;
   --status-away: #f97316;
   --status-offline: #9ca3af;
-  --status-hq: #0284c7;
-  --status-miyake: #16a34a;
+  --status-hq: #334155;
+  --status-miyake: #22c55e;
   --status-tsuboi: #6366f1;
-  --status-osaka: #d946ef;
-  --status-fukuoka: #059669;
-  --status-yokohama: #0ea5e9;
+  --status-osaka: #ec4899;
+  --status-fukuoka: #84cc16;
+  --status-yokohama: #a16207;
   
   --me-bg: rgba(59, 130, 246, 0.05); /* Pale blue highlight */
 }
@@ -94,20 +94,20 @@
   --active-bg: rgba(147, 102, 57, 0.08);
   --active-border: #936639;
   
-  --status-office: #936639;
-  --status-meeting: #C68642;
-  --status-out: #b05c5a;
-  --status-onsite: #c57b85;
-  --status-biztrip: #7D904B;
-  --status-holiday: #a3b18a;
-  --status-away: #d4a373;
+  --status-office: #4a6fa5;
+  --status-meeting: #d4a373;
+  --status-out: #846b8a;
+  --status-onsite: #669bbc;
+  --status-biztrip: #7d904b;
+  --status-holiday: #b05c5a;
+  --status-away: #c68642;
   --status-offline: #707670;
-  --status-hq: #582f0e;
+  --status-hq: #432818;
   --status-miyake: #606c38;
-  --status-tsuboi: #9c6644;
-  --status-osaka: #7f4f24;
-  --status-fukuoka: #a47148;
-  --status-yokohama: #5c6d70;
+  --status-tsuboi: #5c6d70;
+  --status-osaka: #c57b85;
+  --status-fukuoka: #a3b18a;
+  --status-yokohama: #9c6644;
   
   --me-bg: rgba(210, 160, 90, 0.15); /* Warm pale yellow highlight */
 }
