@@ -65,7 +65,7 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
     setCurrentWeekStart(newStart);
   };
 
-  const [modalData, setModalData] = useState({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', status: 'hq', isAllDay: false });
+  const [modalData, setModalData] = useState({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', status: 'office', isAllDay: false });
 
   const mySchedules = currentUser?.schedules || [];
   const myTasks = currentUser?.tasks || [];
@@ -120,12 +120,12 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
         start: typeof schedule.start === 'number' ? numToTime(schedule.start) : schedule.start,
         end: typeof schedule.end === 'number' ? numToTime(schedule.end) : schedule.end,
         color: schedule.color || 'blue',
-        status: schedule.status || 'hq',
+        status: schedule.status || 'office',
         isAllDay: schedule.isAllDay || false
       });
     } else {
       setEditingScheduleId(null);
-      setModalData({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', status: 'hq', isAllDay: false });
+      setModalData({ title: '', date: todayStr, endDate: todayStr, start: '09:00', end: '10:00', color: 'blue', status: 'office', isAllDay: false });
     }
     setIsScheduleModalOpen(true);
   };
@@ -353,20 +353,22 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
                   onChange={e => setModalData({...modalData, status: e.target.value})}
                   style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '15px', backgroundColor: 'var(--bg-panel)', color: 'var(--text-main)' }}
                 >
-                  <option value="hq">本社</option>
-                  <option value="miyake">三宅工場</option>
-                  <option value="tsuboi">坪井工場</option>
-                  <option value="osaka">大阪営業所</option>
-                  <option value="fukuoka">福岡営業所</option>
-                  <option value="yokohama">横浜営業所</option>
+                  <option value="office">出社 (社内)</option>
+                  <option value="meeting">会議</option>
+                  <option value="out">外出</option>
                   <option value="onsite">現場</option>
                   <option value="biztrip">出張</option>
                   <option value="holiday">休暇</option>
-                  <option value="out">外出</option>
-                  <option value="office">出社</option>
-                  <option value="meeting">会議</option>
                   <option value="away">離席</option>
                   <option value="offline">退勤</option>
+                  <optgroup label="【 拠点移動（主に役員用） 】">
+                    <option value="hq">本社</option>
+                    <option value="miyake">三宅工場</option>
+                    <option value="tsuboi">坪井工場</option>
+                    <option value="osaka">大阪営業所</option>
+                    <option value="fukuoka">福岡営業所</option>
+                    <option value="yokohama">横浜営業所</option>
+                  </optgroup>
                 </select>
               </div>
               <div className="input-group-vertical">
