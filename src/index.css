@@ -659,6 +659,11 @@ body {
   border: none;
 }
 
+.btn-primary:hover {
+  background: var(--text-main);
+  opacity: 0.8;
+}
+
 /* Drag and Drop */
 .drag-drop-zone {
   width: 100%;
