@@ -40,7 +40,7 @@ export default function Settings({ currentUser }: { currentUser: any }) {
     return () => unsubscribe();
   }, []);
 
-  const handleNotificationToggle = async (type: 'popupEnabled' | 'soundEnabled' | 'chatPopupEnabled' | 'chatSoundEnabled' | 'schedulePopupEnabled' | 'scheduleSoundEnabled', value: boolean) => {
+  const handleNotificationToggle = async (type: 'popupEnabled' | 'soundEnabled' | 'chatPopupEnabled' | 'chatSoundEnabled' | 'schedulePopupEnabled' | 'scheduleSoundEnabled' | 'broadcastScheduleUpdates', value: boolean) => {
     if (!currentUser) return;
     try {
       const updatedNotifications = {
@@ -364,6 +364,17 @@ export default function Settings({ currentUser }: { currentUser: any }) {
                     type="checkbox" 
                     checked={currentUser?.notifications?.scheduleSoundEnabled ?? currentUser?.notifications?.soundEnabled ?? true} 
                     onChange={e => handleNotificationToggle('scheduleSoundEnabled', e.target.checked)} 
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed var(--border-color)' }}>
+                <div className="settings-label" style={{ fontSize: '13px', color: 'var(--text-main)' }}>自分の予定変更を他の人に通知する</div>
+                <label className="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    checked={currentUser?.notifications?.broadcastScheduleUpdates ?? true} 
+                    onChange={e => handleNotificationToggle('broadcastScheduleUpdates', e.target.checked)} 
                   />
                   <span className="slider"></span>
                 </label>
