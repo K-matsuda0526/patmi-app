@@ -14,21 +14,10 @@ const getInitials = (name: string) => {
   return name.charAt(0);
 };
 
+import { STATUS_LABELS } from './TeamCalendar';
+
 const getStatusLabel = (status: string) => {
-  const map: Record<string, string> = {
-    hq: '本社',
-    miyake: '三宅工場',
-    tsuboi: '坪井工場',
-    osaka: '大阪営業所',
-    fukuoka: '福岡営業所',
-    yokohama: '横浜営業所',
-    onsite: '現場',
-    biztrip: '出張',
-    holiday: '休暇',
-    offline: '退勤',
-    away: '離席'
-  };
-  return map[status] || status;
+  return STATUS_LABELS[status] || status;
 };
 
 export default function Directory({ onStartChat }: { onStartChat?: (userId: string) => void }) {
@@ -63,17 +52,11 @@ export default function Directory({ onStartChat }: { onStartChat?: (userId: stri
           </div>
         </div>
         <div className="status-legend" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-hq"></span>本社</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-miyake"></span>三宅工場</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-tsuboi"></span>坪井工場</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-osaka"></span>大阪営業所</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-fukuoka"></span>福岡営業所</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-yokohama"></span>横浜営業所</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-onsite"></span>現場</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-biztrip"></span>出張</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-holiday"></span>休暇</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-away"></span>離席</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span className="status-dot status-offline"></span>退勤</div>
+          {Object.entries(STATUS_LABELS).map(([key, label]) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
+              <span className={`status-dot status-${key}`}></span>{label}
+            </div>
+          ))}
         </div>
       </div>
 
