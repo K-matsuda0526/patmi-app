@@ -241,6 +241,9 @@
 .status-dot.status-holiday { background-color: var(--status-holiday); }
 .status-dot.status-offline { background-color: var(--status-offline); }
 .status-dot.status-away { background-color: var(--status-away); }
+.status-dot.status-office { background-color: var(--status-office); }
+.status-dot.status-meeting { background-color: var(--status-meeting); }
+.status-dot.status-out { background-color: var(--status-out); }
 
 /* External Links */
 .external-links-list {
@@ -328,6 +331,9 @@
 .status-badge.status-holiday { background-color: var(--status-holiday); }
 .status-badge.status-offline { background-color: var(--status-offline); }
 .status-badge.status-away { background-color: var(--status-away); }
+.status-badge.status-office { background-color: var(--status-office); }
+.status-badge.status-meeting { background-color: var(--status-meeting); }
+.status-badge.status-out { background-color: var(--status-out); }
 
 .status-name {
   font-size: 14px;
