@@ -148,33 +148,12 @@ export default function NotificationProvider({ currentUser, children }: Notifica
     };
   }, []);
 
-  // Monitor Schedule updates (users collection)
+  // Keep users collection in sync for chat sender resolution, but DO NOT trigger notifications on schedule changes
   useEffect(() => {
     if (!currentUser) return;
 
     const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
       const newMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const prevMembers = prevMembersRef.current;
-      
-      if (prevMembers.length > 0) {
-        newMembers.forEach(newMember => {
-          if (newMember.id === currentUser.uid || newMember.id === currentUser.id) return;
-
-          const oldMember: any = prevMembers.find(m => m.id === newMember.id);
-          if (oldMember) {
-             const getHash = (schedules: any[]) => {
-               if (!schedules) return '';
-               return schedules.map(s => `${s.id || ''}-${s.title || ''}-${s.start || ''}-${s.end || ''}-${s.date || ''}`).sort().join('|');
-             };
-             const oldHash = getHash(oldMember.schedules);
-             const newHash = getHash((newMember as any).schedules);
-             
-             if (oldHash !== newHash) {
-               triggerScheduleNotification(newMember);
-             }
-          }
-        });
-      }
       prevMembersRef.current = newMembers;
     });
 
@@ -209,20 +188,7 @@ export default function NotificationProvider({ currentUser, children }: Notifica
     return () => unsubscribe();
   }, [currentUser]);
 
-  const triggerScheduleNotification = (member: any) => {
-    const settings = currentUser?.notifications || {};
-    const mutedMembers = settings.mutedMembers || [];
-    if (mutedMembers.includes(member.id)) return;
 
-    const popupEnabled = settings.schedulePopupEnabled ?? settings.popupEnabled ?? true;
-    const soundEnabled = settings.scheduleSoundEnabled ?? settings.soundEnabled ?? true;
-
-    if (popupEnabled) {
-      const title = `${member.name || 'メンバー'}さんが予定を更新しました`;
-      showToast(title, 'schedule');
-    }
-    if (soundEnabled) playNotificationSound('schedule');
-  };
 
   const triggerChatNotification = (room: any) => {
     const settings = currentUser?.notifications || {};
