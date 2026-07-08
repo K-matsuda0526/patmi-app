@@ -103,7 +103,7 @@ export default function Directory({ onStartChat }: { onStartChat?: (userId: stri
               </div>
               <div className="contact-emails">
                 {member.emails?.map((email: string, idx: number) => (
-                  <a key={idx} href={`mailto:${email}`} className="contact-item" style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
+                  <a key={idx} href={`mailto:${email}`} target="_blank" rel="noopener noreferrer" className="contact-item" style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                     <Mail size={14} /> {email}
                   </a>
                 ))}
@@ -114,7 +114,7 @@ export default function Directory({ onStartChat }: { onStartChat?: (userId: stri
               <button className="dir-btn" onClick={() => onStartChat && onStartChat(member.id)}>
                 <MessageSquare size={14} /> チャット
               </button>
-              <a href={`mailto:${member.emails?.[0] || ''}`} className="dir-btn" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <a href={`mailto:${member.emails?.[0] || ''}`} target="_blank" rel="noopener noreferrer" className="dir-btn" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Mail size={14} /> メール
               </a>
             </div>
