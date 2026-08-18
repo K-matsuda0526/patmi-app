@@ -43,7 +43,7 @@
 [data-theme="cool"] {
     /* Theme: Adult Cool (Blue Gray) */
     --bg-body: #f1f5f9;
-    --bg-sidebar: #334155;
+    --bg-sidebar: #46698C;
     --bg-card: rgba(255, 255, 255, 0.85);
     --text-main: #1e293b;
     --text-sidebar: #f8fafc;
@@ -351,7 +351,7 @@ body {
   min-width: 800px;
 }
 
-.month-view, .week-view {
+.week-view {
   min-width: 800px;
 }
 
@@ -829,10 +829,12 @@ body {
 .online-indicator {
   animation: online-pulse 2s infinite;
 }
-.sidebar.collapsed { width: 80px; padding: 24px 12px; transition: width 0.3s ease; }
-.sidebar.collapsed .nav-item span, .sidebar.collapsed .theme-switcher, .sidebar.collapsed .sidebar-subtitle { display: none; }
-.sidebar.collapsed .nav-item { padding: 12px; justify-content: center; }
-.sidebar.collapsed .nav-item svg { margin: 0; }
+@media (min-width: 769px) {
+  .sidebar.collapsed { width: 80px; padding: 24px 12px; transition: width 0.3s ease; }
+  .sidebar.collapsed .nav-item span, .sidebar.collapsed .theme-switcher, .sidebar.collapsed .sidebar-subtitle { display: none; }
+  .sidebar.collapsed .nav-item { padding: 12px; justify-content: center; }
+  .sidebar.collapsed .nav-item svg { margin: 0; }
+}
 
 .chat-container {
   display: flex;

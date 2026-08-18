@@ -11,7 +11,7 @@ import { doc, setDoc, collection, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage, auth } from '../lib/firebase';
 
-export default function Settings({ currentUser }: { currentUser: any }) {
+export default function Settings({ currentUser, theme, setTheme }: { currentUser: any, theme?: string, setTheme?: (t: string) => void }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -215,6 +215,33 @@ export default function Settings({ currentUser }: { currentUser: any }) {
       </header>
 
       <div className="settings-content">
+        {setTheme && (
+          <div className="settings-section glass-panel">
+            <div className="settings-section-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <h3>カラーテーマ</h3>
+              </div>
+            </div>
+            <div className="settings-list" style={{ display: 'flex', gap: '16px', padding: '16px 0' }}>
+              <button 
+                className={`btn ${theme === 'cool' ? 'active-btn btn-primary' : 'btn-outline'}`} 
+                onClick={() => setTheme('cool')} 
+                style={{ padding: '8px 16px', flex: 1 }}
+              >
+                大人かっこいい
+              </button>
+              <button 
+                className={`btn ${theme === 'cafe' ? 'active-btn btn-primary' : 'btn-outline'}`} 
+                onClick={() => setTheme('cafe')} 
+                style={{ padding: '8px 16px', flex: 1 }}
+              >
+                おしゃれカフェ
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="settings-section glass-panel">
           <div className="settings-section-header" style={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

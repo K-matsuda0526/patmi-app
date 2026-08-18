@@ -306,7 +306,7 @@ function App() {
         {activeTab === 'myschedule' && <MySchedule currentUser={currentUser} />}
         {activeTab === 'directory' && <Directory onStartChat={(userId: string) => { setActiveTab('chat'); setTargetUserIdForChat(userId); }} />}
         {activeTab === 'chat' && <Chat currentUser={currentUser} initialTargetUserId={targetUserIdForChat} />}
-        {activeTab === 'settings' && <SettingsView currentUser={currentUser} />}
+        {activeTab === 'settings' && <SettingsView currentUser={currentUser} theme={theme} setTheme={setTheme} />}
       </main>
     </div>
     </NotificationProvider>
