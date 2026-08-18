@@ -248,21 +248,11 @@ function App() {
           </a>
           <a href="#" className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('chat'); }} style={{ position: 'relative' }} title={isSidebarCollapsed ? "チャット" : ""}>
             <MessageSquare size={18} />
-            {!isSidebarCollapsed ? (
-              <span style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
-                チャット
-                {totalUnreadChat > 0 && (
-                  <span style={{ backgroundColor: '#ef4444', color: 'white', borderRadius: '12px', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold' }}>
-                    {totalUnreadChat}
-                  </span>
-                )}
+            <span>チャット</span>
+            {totalUnreadChat > 0 && (
+              <span className={`chat-badge ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+                {isSidebarCollapsed ? '' : totalUnreadChat}
               </span>
-            ) : (
-              <>
-                {totalUnreadChat > 0 && (
-                  <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#ef4444', width: '8px', height: '8px', borderRadius: '50%' }}></span>
-                )}
-              </>
             )}
           </a>
           <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); }} title={isSidebarCollapsed ? "設定" : ""}>

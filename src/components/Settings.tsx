@@ -223,20 +223,22 @@ export default function Settings({ currentUser, theme, setTheme }: { currentUser
                 <h3>カラーテーマ</h3>
               </div>
             </div>
-            <div className="settings-list" style={{ display: 'flex', gap: '16px', padding: '16px 0' }}>
+            <div className="settings-list" style={{ display: 'flex', gap: '24px', padding: '16px 0' }}>
               <button 
-                className={`btn ${theme === 'cool' ? 'active-btn btn-primary' : 'btn-outline'}`} 
+                className="theme-btn-wrapper"
                 onClick={() => setTheme('cool')} 
-                style={{ padding: '8px 16px', flex: 1 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', opacity: theme === 'cool' ? 1 : 0.6 }}
               >
-                大人かっこいい
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#46698C', border: theme === 'cool' ? '3px solid var(--text-main)' : '3px solid transparent' }}></div>
+                <span style={{ fontSize: '14px', fontWeight: theme === 'cool' ? 'bold' : 'normal', color: 'var(--text-main)' }}>大人かっこいい</span>
               </button>
               <button 
-                className={`btn ${theme === 'cafe' ? 'active-btn btn-primary' : 'btn-outline'}`} 
+                className="theme-btn-wrapper"
                 onClick={() => setTheme('cafe')} 
-                style={{ padding: '8px 16px', flex: 1 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', opacity: theme === 'cafe' ? 1 : 0.6 }}
               >
-                おしゃれカフェ
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#8c7c73', border: theme === 'cafe' ? '3px solid var(--text-main)' : '3px solid transparent' }}></div>
+                <span style={{ fontSize: '14px', fontWeight: theme === 'cafe' ? 'bold' : 'normal', color: 'var(--text-main)' }}>おしゃれカフェ</span>
               </button>
             </div>
           </div>
