@@ -267,15 +267,15 @@ function App() {
           <div className="theme-options" style={{ flexDirection: 'row', gap: '16px', padding: '4px 0' }}>
             <button 
               className={`theme-color-btn ${theme === 'cool' ? 'active' : ''}`} 
-              style={{ backgroundColor: '#1e293b' }}
+              style={{ backgroundColor: '#46698C' }}
               onClick={() => setTheme('cool')}
               title="大人かっこいい"
             />
             <button 
               className={`theme-color-btn ${theme === 'cafe' ? 'active' : ''}`} 
-              style={{ backgroundColor: '#8c7c73' }}
+              style={{ backgroundColor: '#d4a373' }}
               onClick={() => setTheme('cafe')}
-              title="おしゃれなカフェ風"
+              title="おしゃれカフェ風"
             />
           </div>
           
