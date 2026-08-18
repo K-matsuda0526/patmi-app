@@ -221,6 +221,8 @@ body {
 .header {
   padding: 24px 40px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
@@ -316,6 +318,7 @@ body {
   color: var(--text-main);
   font-size: 14px;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s;
 }
 

@@ -496,7 +496,7 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <header className="header glass-panel">
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: '1 1 250px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <h1 className="header-title">タイムライン</h1>
             <select 
@@ -522,25 +522,27 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           </p>
         </div>
         
-        <div style={{ display: 'flex', background: 'var(--border-color)', padding: '2px', borderRadius: '6px', marginRight: '16px' }}>
-          <button className={`btn ${calendarView === 'day' ? 'active' : ''}`} style={{ background: calendarView === 'day' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('day')}>日</button>
-          <button className={`btn ${calendarView === 'week' ? 'active' : ''}`} style={{ background: calendarView === 'week' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('week')}>週</button>
-          <button className={`btn ${calendarView === 'month' ? 'active' : ''}`} style={{ background: calendarView === 'month' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('month')}>月</button>
-        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', background: 'var(--border-color)', padding: '2px', borderRadius: '6px' }}>
+            <button className={`btn ${calendarView === 'day' ? 'active' : ''}`} style={{ background: calendarView === 'day' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('day')}>日</button>
+            <button className={`btn ${calendarView === 'week' ? 'active' : ''}`} style={{ background: calendarView === 'week' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('week')}>週</button>
+            <button className={`btn ${calendarView === 'month' ? 'active' : ''}`} style={{ background: calendarView === 'month' ? 'var(--bg-card)' : 'transparent', border: 'none' }} onClick={() => setCalendarView('month')}>月</button>
+          </div>
 
-        <div className="header-actions">
-          <button className="btn" style={{ padding: '4px 8px' }} onClick={prevDay}>
-            <ChevronLeft size={16} />
-          </button>
-          <button className="btn" onClick={() => setCalendarDate(new Date())}>
-            今日
-          </button>
-          <button className="btn" style={{ padding: '4px 8px' }} onClick={nextDay}>
-            <ChevronRight size={16} />
-          </button>
-          <button className="btn" style={{ background: 'var(--active-bg)', marginLeft: '8px' }} onClick={() => openModal()}>
-            <Plus size={16} /> 予定追加
-          </button>
+          <div className="header-actions">
+            <button className="btn" style={{ padding: '4px 8px' }} onClick={prevDay}>
+              <ChevronLeft size={16} />
+            </button>
+            <button className="btn" onClick={() => setCalendarDate(new Date())}>
+              今日
+            </button>
+            <button className="btn" style={{ padding: '4px 8px' }} onClick={nextDay}>
+              <ChevronRight size={16} />
+            </button>
+            <button className="btn" style={{ background: 'var(--active-bg)', marginLeft: '8px' }} onClick={() => openModal()}>
+              <Plus size={16} /> 予定追加
+            </button>
+          </div>
         </div>
       </header>
       
