@@ -94,12 +94,12 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
             <div style={{ color: 'var(--text-muted)', fontSize: '13px', padding: '12px 0' }}>予定はありません</div>
           ) : (
             daySchedules.map((schedule: any) => (
-              <div 
-                key={schedule.id} 
-                className="schedule-item" 
-                style={{ padding: '12px', marginBottom: '8px', cursor: 'pointer', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : `var(--accent-${schedule.color || 'blue'})` }}
-                onClick={() => openModal(schedule)}
-              >
+                <div 
+                  key={schedule.id} 
+                  className="schedule-item" 
+                  style={{ padding: '12px', marginBottom: '8px', cursor: 'pointer', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : (schedule.color?.startsWith('tag-') ? `var(--${schedule.color})` : `var(--accent-${schedule.color || 'blue'})`), color: schedule.color?.startsWith('tag-') || schedule.color?.startsWith('#') ? 'white' : 'var(--text-main)' }}
+                  onClick={() => openModal(schedule)}
+                >
                 <div style={{ fontWeight: 'bold' }}>{schedule.isAllDay ? '終日' : `${numToTime(schedule.start)} - ${numToTime(schedule.end)}`}</div>
                 <div>{schedule.status ? `[${STATUS_LABELS[schedule.status] || schedule.status}] ` : ''}{schedule.title}</div>
               </div>
@@ -368,13 +368,13 @@ export default function MySchedule({ currentUser }: { currentUser: any }) {
               </div>
               <div className="input-group-vertical">
                 <label>カラータグ</label>
-                <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  {['blue', 'pink', 'green', 'yellow'].map(c => (
-                    <div 
-                      key={c} 
-                      className={`color-circle bg-${c} ${modalData.color === c ? 'selected' : ''}`}
-                      onClick={() => setModalData({...modalData, color: c})}
-                    />
+                  <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {['tag-1', 'tag-2', 'tag-3', 'tag-4', 'tag-5', 'tag-6'].map(c => (
+                      <div 
+                        key={c} 
+                        className={`color-circle bg-${c} ${modalData.color === c ? 'selected' : ''}`}
+                        onClick={() => setModalData({...modalData, color: c})}
+                      />
                   ))}
                   <div style={{ borderLeft: '1px solid var(--border-color)', height: '24px', margin: '0 4px' }}></div>
                   <input 

@@ -279,8 +279,10 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
           return (
             <div 
               key={schedule.id}
-              className={`schedule-block bg-${schedule.color}`}
+              className={`schedule-block ${schedule.color?.startsWith('#') ? '' : `bg-${schedule.color || 'blue'}`}`}
               style={{ 
+                backgroundColor: schedule.color?.startsWith('#') ? schedule.color : undefined,
+                color: schedule.color?.startsWith('tag-') || schedule.color?.startsWith('#') ? 'white' : 'var(--text-main)',
                 left: `${leftPercent}%`, 
                 width: `${widthPercent}%`, 
                 cursor: isMe ? 'pointer' : 'default',
@@ -401,8 +403,8 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                       {daySchedules.map((schedule:any) => (
                         <div 
                           key={schedule.id}
-                          className={`bg-${schedule.color}`}
-                          style={{ marginBottom: '4px', padding: '2px 4px', borderRadius: '4px', fontSize: '11px', cursor: isMe ? 'pointer' : 'default', lineHeight: 1.2 }}
+                          className={schedule.color?.startsWith('#') ? '' : `bg-${schedule.color || 'blue'}`}
+                          style={{ backgroundColor: schedule.color?.startsWith('#') ? schedule.color : undefined, color: schedule.color?.startsWith('tag-') || schedule.color?.startsWith('#') ? 'white' : 'var(--text-main)', marginBottom: '4px', padding: '2px 4px', borderRadius: '4px', fontSize: '11px', cursor: isMe ? 'pointer' : 'default', lineHeight: 1.2 }}
                           onClick={(e) => { if (isMe) { e.stopPropagation(); openModal(schedule); } }}
                         >
                           <div style={{ fontWeight: 'bold' }}>{schedule.status ? `[${STATUS_LABELS[schedule.status] || schedule.status}] ` : ''}{schedule.title}</div>
@@ -466,8 +468,8 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
                     return (
                       <div 
                         key={`${schedule.id}-${idx}`}
-                        className={`bg-${schedule.color}`}
-                        style={{ fontSize: '10px', padding: '2px 4px', borderRadius: '2px', cursor: isMe ? 'pointer' : 'default', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center' }}
+                        className={schedule.color?.startsWith('#') ? '' : `bg-${schedule.color || 'blue'}`}
+                        style={{ backgroundColor: schedule.color?.startsWith('#') ? schedule.color : undefined, color: schedule.color?.startsWith('tag-') || schedule.color?.startsWith('#') ? 'white' : 'var(--text-main)', fontSize: '10px', padding: '2px 4px', borderRadius: '2px', cursor: isMe ? 'pointer' : 'default', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center' }}
                         onClick={(e) => { 
                           if (isMe) { 
                             e.stopPropagation(); 
@@ -618,8 +620,8 @@ export default function TeamCalendar({ currentUser }: { currentUser: any }) {
               </div>
               <div className="input-group-vertical">
                 <label>カラータグ</label>
-                <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {['blue', 'pink', 'green', 'yellow'].map(c => (
+                <div className="color-picker" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {['tag-1', 'tag-2', 'tag-3', 'tag-4', 'tag-5', 'tag-6'].map(c => (
                       <div 
                         key={c} 
                         className={`color-circle bg-${c} ${modalData.color === c ? 'selected' : ''}`}

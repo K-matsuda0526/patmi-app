@@ -54,6 +54,13 @@
     --accent-pink: #f1f5f9;
     --accent-green: #d1fae5;
     --accent-yellow: #fef3c7;
+
+    --tag-1: #60a5fa;
+    --tag-2: #f472b6;
+    --tag-3: #34d399;
+    --tag-4: #fbbf24;
+    --tag-5: #a78bfa;
+    --tag-6: #fb923c;
     
     --active-bg: rgba(248, 250, 252, 0.1);
     --active-border: #94a3b8;
@@ -90,6 +97,13 @@
     --accent-pink: #f2e6e3;
     --accent-green: #e9f0db;
     --accent-yellow: #f5eedf;
+
+    --tag-1: #72a1e5;
+    --tag-2: #e27a7e;
+    --tag-3: #8eb36d;
+    --tag-4: #e5b25d;
+    --tag-5: #b588b5;
+    --tag-6: #e08b5e;
     
     --active-bg: rgba(147, 102, 57, 0.05);
     --active-border: #b89c7c;
@@ -450,6 +464,13 @@ body {
 .bg-pink { background-color: var(--accent-pink); }
 .bg-green { background-color: var(--accent-green); }
 .bg-yellow { background-color: var(--accent-yellow); }
+
+.bg-tag-1 { background-color: var(--tag-1); color: white; }
+.bg-tag-2 { background-color: var(--tag-2); color: white; }
+.bg-tag-3 { background-color: var(--tag-3); color: white; }
+.bg-tag-4 { background-color: var(--tag-4); color: white; }
+.bg-tag-5 { background-color: var(--tag-5); color: white; }
+.bg-tag-6 { background-color: var(--tag-6); color: white; }
 
 /* Responsive Mobile Cards */
 @media (max-width: 768px) {

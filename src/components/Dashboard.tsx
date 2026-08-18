@@ -125,7 +125,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
               <div style={{ color: 'var(--text-muted)', fontSize: '14px', padding: '12px 0' }}>本日の予定はありません</div>
             ) : (
               todaysSchedules.map((schedule: any) => (
-                <div key={schedule.id} className="schedule-item" style={{ padding: '12px', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : `var(--accent-${schedule.color || 'blue'})` }}>
+                <div key={schedule.id} className="schedule-item" style={{ padding: '12px', backgroundColor: schedule.color?.startsWith('#') ? schedule.color : (schedule.color?.startsWith('tag-') ? `var(--${schedule.color})` : `var(--accent-${schedule.color || 'blue'})`), color: schedule.color?.startsWith('tag-') || schedule.color?.startsWith('#') ? 'white' : 'var(--text-main)' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>{schedule.isAllDay ? '終日' : `${schedule.start} - ${schedule.end}`}</div>
                   <div style={{ fontSize: '15px' }}>{schedule.title}</div>
                 </div>
